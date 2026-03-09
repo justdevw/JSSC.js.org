@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - run: mv jssc/jssc.js website/jssc.js && mv jssc/jssc.min.js website/jssc.min.js && mv jssc/jssc.d.ts website/jssc.d.ts
+      - run: cp -r jssc/. website/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
