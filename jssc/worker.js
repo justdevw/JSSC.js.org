@@ -39,14 +39,8 @@ SOFTWARE.
 
 import JUSTC from 'justc';
 
-var version$1 = "2.1.0-test";
-var pkg = {
-	version: version$1};
-
 const name__ = 'JSSC';
 const prefix = name__+': ';
-
-const version = pkg.version;
 
 function stringCodes(str) {
     let output = [];
@@ -73,7 +67,7 @@ function checkChar(cde) {
     return cde % 65535 === cde
 }
 
-function stringChunks$1(str, num) {
+function stringChunks(str, num) {
     const output = [];
     for (let i = 0; i < str.length; i += num) {
         output.push(str.slice(i, i + num));
@@ -93,18 +87,6 @@ function decToBin(num, wnum) {
 }
 function binToDec(str) {
     return parseInt(str, 2);
-}
-
-function B64Padding(str) {    
-    const padding = str.length % 4;
-
-    if (padding === 2) {
-        str += '==';
-    } else if (padding === 3) {
-        str += '=';
-    }
-
-    return str;
 }
 
 const freqMap = {
@@ -871,7 +853,7 @@ function compressB64(str) {
     const { bin, len } = packB64(numbers);
 
     const result = [];
-    for (const chunk of stringChunks$1(bin, 16)) {
+    for (const chunk of stringChunks(bin, 16)) {
         result.push(String.fromCharCode(binToDec(chunk)));
     }
 
@@ -3083,14 +3065,6 @@ function buildTrie(sequences) {
 }
 const seqTrie = buildTrie(seq);
 
-function stringChunks(str, num) {
-    const output = [];
-    for (let i = 0; i < str.length; i += num) {
-        output.push(str.slice(i, i + num));
-    }
-    return output
-}
-
 function check(s, b, bc) {
     const prefix = 'JSSC: UTF-16-to-any-Base: ';
     
@@ -3216,56 +3190,6 @@ function encode(str, base = 64, baseChars = B64) {
     }
 
     return convertBase(RLE(output).join(''), 41, base);
-}
-
-/**
- * Converts any base string to UTF-16
- * 
- * @param {string} str - Encoded string
- * @param {number?} base - Base number (`optional`) (`64` by default)
- * @param {string?} baseChars - Base characters string (`optional`) (supports up to Base64 by default)
- * @returns {string} UTF-16 string
- */
-function decode(str, base = 64, baseChars = B64) {
-    check(str, base, baseChars);
-
-    let base41 = convertBase(str, base, 41);
-    let output = '';
-
-    const d3 = base41.length % 3;
-    if (d3 == 1) base41 = '00' + base41;
-    if (d3 == 2) base41 = '0' + base41;
-
-    let last = '';
-    for (const chunk of stringChunks(base41, 3)) {
-        const value = parseInt(convertBase(chunk, 41, 10), 10);
-
-        let back = [false, last];
-        if (value == 0) {
-            last = last.repeat(2);
-            back[0] = true;
-        } else if (value >= seq.length + seqOffset) {
-            const val = value - seq.length - seqOffset;
-            if (val < 18) {
-                last = last.repeat(2 ** (val + 1));
-            } else {
-                last = last.repeat(2 * (val + 1));
-            }
-            back[0] = true;
-        } else if (value >= seqOffset) {
-            const index = value - seqOffset;
-            last = seq[index];
-        } else {
-            last = String.fromCharCode(value - 1);
-        }
-        output += last;
-
-        if (back[0]) {
-            last = back[1];
-        }
-    }
-
-    return output;
 }
 
 function getDefaultExportFromCjs (x) {
@@ -4011,7 +3935,7 @@ var lz = /*@__PURE__*/getDefaultExportFromCjs(lzStringExports);
 let WorkerImpl = null;
 let maxWorkers = 4;
 
-const isNode =
+const isNode$1 =
     typeof process !== 'undefined' &&
     process.versions &&
     process.versions.node;
@@ -4019,7 +3943,7 @@ const isNode =
 async function init() {
     if (WorkerImpl) return;
 
-    if (isNode) {
+    if (isNode$1) {
         const os = await import('node:os');
         const wt = await import('node:worker_threads');
         WorkerImpl = wt.Worker;
@@ -4066,7 +3990,7 @@ async function runInWorkers(candidateNames, context, workerURL) {
                     next();
                 };
 
-                if (isNode) {
+                if (isNode$1) {
                     worker.on('message', (msg) => {
                         finish(msg?.result);
                     });
@@ -4125,16 +4049,6 @@ function setCache(key, value) {
     }
     validateCache.set(key, value);
     if (isMemHigh()) clear();
-}
-
-function setMaxCache(number) {
-    if (typeof number != 'number') throw new Error(prefix+'Invalid argument 0');
-    const imh = isMemHigh();
-    if (number < maxCache || imh) clear(imh);
-    maxCache = number;
-}
-function getMaxCache() {
-    return maxCache;
 }
 
 const { eUTF8 } = (()=>{
@@ -4572,7 +4486,7 @@ function characterEncodings(id, realstr) {
                 return String(characterEncoding[String(binToDec(charr))]);
             }
             if (binCode0.length > 8) {
-                const [character1, character2] = stringChunks$1(decToBin(characterCode, 16), 8);
+                const [character1, character2] = stringChunks(decToBin(characterCode, 16), 8);
                 output.push(binCodeToChar(character1) + binCodeToChar(character2));
             } else {
                 const character = decToBin(characterCode, 8);
@@ -4720,7 +4634,7 @@ async function decompress(str, stringify = false) {
                 const char = realstr.charCodeAt(i);
                 const charcde = String(char);
                 if (charcde.length > 2) {
-                    const charcds = stringChunks$1(charcde, 2);
+                    const charcds = stringChunks(charcde, 2);
                     for (const chrcode of charcds) {
                         addChar(parseInt(chrcode));
                     }
@@ -4738,7 +4652,7 @@ async function decompress(str, stringify = false) {
                 const binCode = decToBin(char, 16);
                 const binCode0 = decToBin(char, 0);
                 if (binCode0.length > 8) {
-                    const [bin1, bin2] = stringChunks$1(binCode, 8);
+                    const [bin1, bin2] = stringChunks(binCode, 8);
                     output.push(toChar(bin1) + toChar(bin2));
                 } else {
                     const binCode8 = decToBin(char, 8);
@@ -4749,7 +4663,7 @@ async function decompress(str, stringify = false) {
         case 3:
             for (let i = 0; i < realstr.length; i++) {
                 const char = realstr.charCodeAt(i);
-                const binCodes = stringChunks$1(decToBin(char, 16), 4);
+                const binCodes = stringChunks(decToBin(char, 16), 4);
                 for (const binCode of binCodes) {
                     const numm = binToDec(binCode);
                     if (numm != 15) {
@@ -4764,7 +4678,7 @@ async function decompress(str, stringify = false) {
                 chars.push(realstr[i]);
             }
             for (let i = 0; i < realstr.slice(strcodes.code2).length; i++) {
-                const binCodes = stringChunks$1(decToBin(realstr.charCodeAt(i), 16), 4);
+                const binCodes = stringChunks(decToBin(realstr.charCodeAt(i), 16), 4);
                 for (const binCode of binCodes) {
                     if (binCode != '1111') {
                         const numm = binToDec(binCode);
@@ -4915,41 +4829,6 @@ async function decompress(str, stringify = false) {
     }
 }
 
-async function compressToBase64(...input) {
-    const compressed = await compress(...input);
-
-    if (compressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
-
-    return B64Padding(encode(compressed));
-}
-async function decompressFromBase64(base64, ...params) {
-    const decompressed = await decompress(decode(base64.replace(/=+$/, '')), ...params);
-
-    if (decompressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
-
-    return decompressed;
-}
-
-async function compressLarge(input, ...params) {
-    const LENGTH = 1024;
-    const result = [charCode(cryptCharCode(14, false))];
-    
-    for (let i = 0; i < input.length; i += LENGTH) {
-        const chunk = input.slice(i, i + LENGTH);
-        const compressed = await compress(chunk, ...params);
-        result.push(String.fromCharCode(compressed.length), compressed);
-    }
-
-    return result.join('');
-}
-async function compressLargeToBase64(...input) {
-    const compressed = await compress(...input);
-
-    if (compressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
-
-    return B64Padding(encode(compressed));
-}
-
 async function validate(compressed, originalInput) {
     const cached = validateCache.get(compressed);
     if (typeof cached == 'boolean') return cached;
@@ -5043,7 +4922,7 @@ async function DIP(context) {
     }    let [output, RLE, sequences] = [[], false, false];
     function binPadStart(bin) {
         if (bin.length < 16) {
-            const numm = 4 - stringChunks$1(bin, 4).length;
+            const numm = 4 - stringChunks(bin, 4).length;
             return decToBin(15, 4).repeat(numm)+bin;
         } else return bin;
     }
@@ -5135,7 +5014,7 @@ async function TBCCC(context) {
     if (strdata.maxCharCode >= 256) return null;
 
     let [out, repeatAfter, seq] = [[], false, false];
-    for (const pair of stringChunks$1(str, 2)) {
+    for (const pair of stringChunks(str, 2)) {
         const bin = [];
         for (const c of pair) bin.push(decToBin(c.charCodeAt(0), 8));
         out.push(String.fromCharCode(binToDec(bin.join(''))));
@@ -5441,7 +5320,7 @@ async function EP(context) {
     }
 
     const out = [];
-    for (const chunk of stringChunks$1(bits.join(''), 16)) {
+    for (const chunk of stringChunks(bits.join(''), 16)) {
         out.push(String.fromCharCode(binToDec(chunk.padEnd(16,'0'))));
     }
 
@@ -5508,25 +5387,61 @@ async function LZS(context) {
     return null;
 }
 
-if ((String.fromCharCode(65536).charCodeAt(0) === 65536) || !(String.fromCharCode(256).charCodeAt(0) === 256)) {
-    throw new Error(prefix+'Supported UTF-16 only!')
-}
-
-const cache = {
-    get['max'] () {
-        return getMaxCache();
-    },
-    set['max'] (number) {
-        setMaxCache(number);
-    },
-    get['clear'] () {
-        return function() {
-            validateCache.clear();
-        }
-    },
-    get['size'] () {
-        return validateCache.size;
-    }
+const map = {
+    IIE,
+    DIP,
+    B64IE,
+    TDCCC,
+    TBCCC,
+    CE,
+    AE,
+    FM,
+    URL_,
+    S,
+    SR,
+    EP,
+    B64P,
+    OE,
+    LZS,
 };
 
-export { cache, compress, compressLarge, compressLargeToBase64, compressToBase64, decompress, decompressFromBase64, version };
+let port;
+
+const isNode =
+    typeof process !== 'undefined' &&
+    process.versions &&
+    process.versions.node;
+
+if (isNode) {
+    const { parentPort } = await import('node:worker_threads');
+    port = parentPort;
+} else {
+    port = self;
+}
+
+port.onmessage = async (e) => {
+    const { candidate, context } = e.data;
+
+    try {
+        const fn = map[candidate];
+
+        if (!fn) {
+            port.postMessage({ result: null });
+            return;
+        }
+
+        const ctx = {
+            ...context,
+            opts: {
+                ...context.opts,
+                worker: context.opts.worker + 1
+            }
+        };
+
+        const result = await fn(ctx);
+
+        port.postMessage({ result });
+    } catch {
+        port.postMessage({ result: null });
+    }
+};
