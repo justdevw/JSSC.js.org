@@ -37,14 +37,16 @@ SOFTWARE.
 
 */
 
-/*! JSSC <https://jssc.js.org/> (c) 2025-2026 JustDeveloper <https://justdeveloper.is-a.dev/> */(function (global, factory) {
+/*! JSSC <https://jssc.js.org/> (c) 2025-2026 JustDeveloper <https://justdeveloper.is-a.dev/> */
+
+(function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('justc')) :
   typeof define === 'function' && define.amd ? define(['exports', 'justc'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.JSSC = {}, global.JUSTC));
 })(this, (function (exports, JUSTC) { 'use strict';
 
   var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
-  var version$1 = "0.26.3";
+  var version$1 = "2.1.0-test";
   var pkg = {
   	version: version$1};
 
