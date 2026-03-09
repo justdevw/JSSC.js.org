@@ -37,9 +37,9 @@ SOFTWARE.
 
 */
 
-import JUSTC from 'justc';
+/*! JSSC <https://jssc.js.org/> (c) 2025-2026 JustDeveloper <https://justdeveloper.is-a.dev/> */import JUSTC from 'justc';
 
-var version$1 = "2.1.0-test";
+var version$1 = "0.26.3";
 var pkg = {
 	version: version$1};
 

@@ -37,7 +37,7 @@ SOFTWARE.
 
 */
 
-import JUSTC from 'justc';
+/*! JSSC <https://jssc.js.org/> (c) 2025-2026 JustDeveloper <https://justdeveloper.is-a.dev/> */import JUSTC from 'justc';
 
 const name__ = 'JSSC';
 const prefix = name__+': ';

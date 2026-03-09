@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
 
 MIT License
@@ -37,15 +39,14 @@ SOFTWARE.
 
 */
 
-#!/usr/bin/env node
-import fs from 'fs';
+/*! JSSC <https://jssc.js.org/> (c) 2025-2026 JustDeveloper <https://justdeveloper.is-a.dev/> */import fs from 'fs';
 import path from 'path';
 import JUSTC from 'justc';
 import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
 import { Buffer } from 'node:buffer';
 
-var version$2 = "2.1.0-test";
+var version$2 = "0.26.3";
 var pkg = {
 	version: version$2};
 
