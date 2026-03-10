@@ -48,7 +48,7 @@ import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
 import { Buffer } from 'node:buffer';
 
-var version$2 = "2.1.0-test";
+var version$2 = "2.1.0-test.1";
 var pkg = {
 	version: version$2};
 

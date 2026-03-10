@@ -41,7 +41,7 @@ SOFTWARE.
 
 import JUSTC from 'justc';
 
-var version$1 = "2.1.0-test";
+var version$1 = "2.1.0-test.1";
 var pkg = {
 	version: version$1};
 
