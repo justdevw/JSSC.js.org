@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => setTimeout(() => {
         logo.style.animation = 'var(--anim-duration) logo var(--anim-timing-function) infinite';
         demo.style.filter = '';
         txt.style.filter = '';
+        logo.style.filter = 'contrast(0) brightness(2) drop-shadow(0px 0px 1px black)';
         initDemo(demo);
     }, 600);
     setTimeout(() => {
