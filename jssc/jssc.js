@@ -46,7 +46,7 @@ SOFTWARE.
 })(this, (function (exports, JUSTC) { 'use strict';
 
   var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
-  var version$1 = "2.1.0-test.1";
+  var version$1 = "2.1.0-test.3";
   var pkg = {
   	version: version$1};
 
@@ -4042,7 +4042,7 @@ SOFTWARE.
       return !!WorkerImpl;
   }
 
-  async function runInWorkers(candidateNames, context, workerURL) {
+  async function runInWorkers(candidateNames, context, workerURL, custom = false) {
       await init();
 
       const queue = [...candidateNames];
@@ -4060,8 +4060,12 @@ SOFTWARE.
                   const name = queue.shift();
 
                   const worker = new WorkerImpl(
-                      new URL(workerURL, (typeof document === 'undefined' && typeof location === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : typeof document === 'undefined' ? location.href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('jssc.js', document.baseURI).href))),
-                      { type: 'module' }
+                      (
+                          custom ? new URL(workerURL) : 
+                          new URL(workerURL, (typeof document === 'undefined' && typeof location === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : typeof document === 'undefined' ? location.href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('jssc.js', document.baseURI).href)))
+                      ), {
+                          type: 'module'
+                      }
                   );
 
                   active++;
@@ -4144,6 +4148,94 @@ SOFTWARE.
       return maxCache;
   }
 
+  function compress$1(str) {
+      const original = Array.from(str, ch => ch.charCodeAt(0));
+      const N = original.length;
+      if (N === 0) return null;
+
+      let bestSize = N;
+      let bestMode = -1;
+      let bestPacked = null;
+
+      for (let i = 0; i < 16; i++) {
+          const constVal = i * 256;
+          const xored = original.map(v => v ^ constVal);
+
+          const bits = [];
+          const bytes = [];
+          for (const v of xored) {
+              if (v >= 256) {
+                  bits.push(1);
+                  bytes.push(v >> 8, v & 0xFF);
+              } else {
+                  bits.push(0);
+                  bytes.push(v);
+              }
+          }
+
+          const bitWords = [];
+          for (let j = 0; j < N; j += 16) {
+              let word = 0;
+              for (let b = 0; b < 16 && j + b < N; b++) {
+                  if (bits[j + b]) word |= (1 << b);
+              }
+              bitWords.push(word);
+          }
+
+          const dataWords = [];
+          for (let j = 0; j < bytes.length; j += 2) {
+              const b1 = bytes[j];
+              const b2 = (j + 1 < bytes.length) ? bytes[j + 1] : 0;
+              dataWords.push((b1 << 8) | b2);
+          }
+
+          const totalWords = 1 + bitWords.length + dataWords.length;
+          if (totalWords < bestSize) {
+              bestSize = totalWords;
+              bestMode = i;
+              bestPacked = [N, ...bitWords, ...dataWords];
+          }
+      }
+
+      if (bestMode !== -1) return [String.fromCharCode(...bestPacked), bestMode];
+      return null;
+  }
+
+  function decompress$1(compressed, mode) {
+      const words = Array.from(compressed, ch => ch.charCodeAt(0));
+      const N = words[0];
+      const bitWordsCount = Math.ceil(N / 16);
+      const bitWords = words.slice(1, 1 + bitWordsCount);
+      const dataWords = words.slice(1 + bitWordsCount);
+
+      const bits = [];
+      for (let i = 0; i < N; i++) {
+          const w = bitWords[Math.floor(i / 16)];
+          bits.push(((w >> (i % 16)) & 1) === 1);
+      }
+
+      const bytes = [];
+      for (const w of dataWords) {
+          bytes.push(w >> 8, w & 0xFF);
+      }
+      const totalBytes = N + bits.filter(b => b).length;
+      bytes.length = totalBytes;
+
+      const xored = [];
+      let byteIdx = 0;
+      for (let i = 0; i < N; i++) {
+          if (bits[i]) {
+              xored.push((bytes[byteIdx++] << 8) | bytes[byteIdx++]);
+          } else {
+              xored.push(bytes[byteIdx++]);
+          }
+      }
+
+      const constVal = mode * 256;
+      const original = xored.map(v => v ^ constVal);
+      return String.fromCharCode(...original);
+  }
+
   const { eUTF8 } = (()=>{
       const { encode } = utf8;
       return { eUTF8: encode };
@@ -4188,27 +4280,33 @@ SOFTWARE.
           return binToDec(sixteenBits);
       }
   }
-  /*          Code 1 usage table          */ /* Mode ID */
-  /* ------------------------------------ */ /* ------- */
-  /* 00: No Compression                   */ /* 00      */
-  /* 01: Two-Digit CharCode Concatenation */ /* 01      */
-  /* 02: Two-Byte CharCode Concatenation  */ /* 02      */
-  /* 03: Decimal Integer Packing          */ /* 03      */
-  /* 04: Alphabet Encoding                */ /* 04      */
-  /* 05: Character Encoding               */ /* 05      */
-  /* 06: Inline Integer Encoding          */ /* 06      */
-  /* 07: Frequency Map                    */ /* 07      */
-  /* 08: URL                              */ /* 08      */
-  /* 09: Segmentation                     */ /* 09      */
-  /* 10: String Repetition                */ /* 10      */
-  /* 11: Emoji Packing                    */ /* 12      */
-  /* 12: Base-64 Integer Encoding         */ /* 13      */
-  /* 13: Base-64 Packing                  */ /* 14      */
-  /* 14: Segmentation                     */ /* 17      */
-  /* 15 - 28: Reserved                    */ /* --      */
-  /* 29: lzstring                         */ /* 16      */
-  /* 30: Offset Encoding                  */ /* 15      */
-  /* 31: Recursive Compression            */ /* 11      */
+
+  /*
+       _________________________________________________________________________________________________
+      | Name                             | Short name | Mode ID | Code #1 usage | Code #2 usage | Since |
+      |----------------------------------|------------|---------|---------------|---------------|-------|
+      | No Compression                   | NC         |       0 | 00            | 00            | 1.0.0 |
+      | Two-Digit CharCode Concatenation | TDCCC      |       1 | 01            | 00            | 1.0.0 |
+      | Two-Byte CharCode Concatenation  | TBCCC      |       2 | 02            | 00            | 1.0.0 |
+      | Decimal Integer Packing          | DIP        |       3 | 03            | 00            | 1.0.0 |
+      | Alphabet Encoding                | AE         |       4 | 04            | 00 - 15       | 1.1.0 |
+      | Character Encoding               | CE         |       5 | 05            | 00 - 15       | 1.0.0 |
+      | Inline Integer Encoding          | IIE        |       6 | 00 / 06       | 01 - 15       | 2.0.0 |
+      | Frequency Map                    | FM         |       7 | 07            | 00 - 15       | 2.0.0 |
+      | URL                              | URL        |       8 | 08            | 00 - 15       | 2.0.0 |
+      | Segmentation                     | S          |       9 | 09            | 00 - 15       | 2.0.0 |
+      | String Repetition                | SR         |      10 | 10            | 00 - 15       | 2.0.0 |
+      | Recursive Compression            | RC         |      11 | 31            | 00 - 15       | 2.0.0 |
+      | Emoji Packing                    | EP         |      12 | 11            | 00            | 2.1.0 |
+      | Base-64 Integer Encoding         | B64IE      |      13 | 11            | 01            | 2.1.0 |
+      | Base-64 Packing                  | B64P       |      14 | 12            | 00 - 15       | 2.1.0 |
+      | Offset Encoding                  | OE         |      15 | 30            | custom layout | 2.1.0 |
+      | lz-string                        | LZ         |      16 | 11            | 02            | 2.1.0 |
+      | Chunkification                   | C          |      17 | 11            | 03            | 2.1.0 |
+      | Adaptive XOR                     | AXOR       |      18 | 13            | 00 - 15       | 2.1.0 |
+      |----------------------------------|------------|---------|---------------|---------------|-------|
+
+  */
 
   async function tryRecursive(base, opts) {
       if (!opts.recursivecompression) return base;
@@ -4268,6 +4366,34 @@ SOFTWARE.
       return defaults;
   }
 
+  function getModeID(code1, code2) {
+      switch (code1) {
+          case 0:
+              return code2 == 0 ? 0 : 6;
+          case 11: {
+              switch (code2) {
+                  case 0:
+                      return 12;
+                  case 1:
+                      return 13;
+                  case 2:
+                      return 16;
+                  case 3:
+                      return 17;
+              }
+          }
+          case 12:
+              return 14;
+          case 13:
+              return 18;
+          case 30:
+              return 15;
+          case 31:
+              return 11;
+          default:
+              return code1;
+      }
+  }
   class JSSC {
       constructor (com, dec, opts, m = 0, workers = false) {
           const headerchar = decToBin(com.charCodeAt(0), 16);
@@ -4280,27 +4406,27 @@ SOFTWARE.
           const b = headerchar.slice(10,11);
 
           const compressed = {
-                  string: com,
-                  header: {
-                      code: binToDec(headerchar),
-                      bin: headerchar,
-                      blocks: [
-                          code2,
-                          s,
-                          code3,
-                          i,
-                          o,
-                          b,
-                          code1
-                      ],
-                      code1, code2, code3,
-                      s: s == '1',
-                      i: i == '1',
-                      o: o == '1',
-                      b: b == '0'
-                  },
-                  mode: binToDec(code1)
-              };
+              string: com,
+              header: {
+                  code: binToDec(headerchar),
+                  bin: headerchar,
+                  blocks: [
+                      code2,
+                      s,
+                      code3,
+                      i,
+                      o,
+                      b,
+                      code1
+                  ],
+                  code1, code2, code3,
+                  s: s == '1',
+                  i: i == '1',
+                  o: o == '1',
+                  b: b == '0'
+              },
+              mode: getModeID(binToDec(code1), binToDec(code2))
+          };
 
           this.output = m == 0 ? compressed : dec;
           this.options = opts;
@@ -4510,6 +4636,7 @@ SOFTWARE.
           B64P,
           OE,
           LZS,
+          AXOR
       ];
       async function noWorkers() {
           return await Promise.all(candidates.map(fn => safeTry(async () => await fn(context))));
@@ -4517,8 +4644,17 @@ SOFTWARE.
 
       let usedWorkers = false;
       if (!(opts.worker > opts.workerlimit) && originalInput.length > 64 && await canUseWorkers()) {
-          results = await runInWorkers(candidates.map(fn => fn.name), context, opts.minifiedworker ? workerMin : workerURL);
-          usedWorkers = true;
+          try {
+              usedWorkers = true;
+              results = await runInWorkers(
+                  candidates.map(fn => fn.name), 
+                  context, 
+                  customWorkerURL != null && typeof customWorkerURL != 'undefined' ? customWorkerURL
+                  : opts.minifiedworker ? workerMin : workerURL
+              );
+          } catch (err) {
+              if (opts.debug) console.warn(err);
+          }
       } else results = await noWorkers();
 
       if (usedWorkers && (
@@ -4717,9 +4853,9 @@ SOFTWARE.
       const output = [];
       switch (strcode) {
           case 0: case 6:
-              if (strcodes.code2 > 0) return await processOutput(String(strcodes.code2 - 1));
-              return await processOutput(realstr);
-          case 1:
+              if (strcodes.code2 > 0) return await processOutput(String(strcodes.code2 - 1)); /* Inline Integer Encoding */
+              return await processOutput(realstr); /* No Compression */
+          case 1: /* Two-Digit CharCode Concatenation */
               function addChar(cde) {
                   output.push(String.fromCharCode(cde));
               }
@@ -4736,7 +4872,7 @@ SOFTWARE.
                   }
               }
               return await processOutput(output.join(''));
-          case 2:
+          case 2: /* Two-Byte CharCode Concatenation */
               function toChar(binCode) {
                   return String.fromCharCode(binToDec(binCode));
               }
@@ -4753,7 +4889,7 @@ SOFTWARE.
                   }
               }
               return await processOutput(output.join(''));
-          case 3:
+          case 3: /* Decimal Integer Packing */
               for (let i = 0; i < realstr.length; i++) {
                   const char = realstr.charCodeAt(i);
                   const binCodes = stringChunks$1(decToBin(char, 16), 4);
@@ -4765,7 +4901,7 @@ SOFTWARE.
                   }
               }
               return await processOutput(output.join(''));
-          case 4:
+          case 4: /* Alphabet Encoding */
               const chars = [];
               for (let i = 0; i < realstr.slice(0, strcodes.code2).length; i++) {
                   chars.push(realstr[i]);
@@ -4780,17 +4916,17 @@ SOFTWARE.
                   }
               }
               return await processOutput(output.join(''));
-          case 5:
+          case 5: /* Character Encoding */
               const decoded = characterEncodings(strcodes.code2, realstr);
               if (decoded) {
                   return await processOutput(decoded);
               } else throw new Error(prefix+'Invalid compressed string');
-          case 7:
+          case 7: /* Frequency Map */
               const splitter = freqMapSplitters[binToDec(decToBin(strcodes.code2).slice(1))];
               let output_ = freqMap.decompress(realstr, splitter);
               if (parseInt(decToBin(strcodes.code2).slice(0,1)) == 1) output_ = output_.slice(0,-1);
               return await processOutput(output_);
-          case 8: {
+          case 8: { /* URL */
               let bytes = [];
               for (const ch of realstr) {
                   const c = ch.charCodeAt(0);
@@ -4820,7 +4956,7 @@ SOFTWARE.
               }
 
               return await processOutput(out);}
-          case 9: {
+          case 9: { /* Segmentation */
               let idx = 0;
               const segCount = strcodes.code2 < 15 ? strcodes.code2 + 2 : realstr.charCodeAt(idx++) + 2;
 
@@ -4837,70 +4973,80 @@ SOFTWARE.
               }
 
               return await processOutput(output.join(''));}
-          case 10:
+          case 10: /* String Repetition */
               const sliceChar = strcodes.code2 == 15;
               const repeatCount = sliceChar ? realstr.charCodeAt(0) + 15 : strcodes.code2;
               if (sliceChar) realstr = realstr.slice(1);
               return await processOutput(realstr.repeat(repeatCount));
           case 11: {
-              const base = 0x1F300;
+              switch (strcodes.code2) {
+                  case 0: { /* Emoji Packing */
+                      const base = 0x1F300;
 
-              let bits = [];
+                      let bits = [];
 
-              for (let i = 0; i < realstr.length; i++) {
-                  const code = realstr.charCodeAt(i);
-                  bits.push(code.toString(2).padStart(16, '0'));
-              }
-              bits = bits.join('');
+                      for (let i = 0; i < realstr.length; i++) {
+                          const code = realstr.charCodeAt(i);
+                          bits.push(code.toString(2).padStart(16, '0'));
+                      }
+                      bits = bits.join('');
 
-              let pos = 0;
-              
-              while (pos + 3 <= bits.length) {
-                  const length = parseInt(bits.slice(pos, pos + 3), 2);
-                  pos += 3;
+                      let pos = 0;
+                      
+                      while (pos + 3 <= bits.length) {
+                          const length = parseInt(bits.slice(pos, pos + 3), 2);
+                          pos += 3;
 
-                  if (length === 0) break;
+                          if (length === 0) break;
 
-                  if (pos + (length * 11) > bits.length) break;
+                          if (pos + (length * 11) > bits.length) break;
 
-                  const cluster = [];
+                          const cluster = [];
 
-                  for (let i = 0; i < length; i++) {
-                      const delta = parseInt(bits.slice(pos, pos + 11), 2);
-                      pos += 11;
+                          for (let i = 0; i < length; i++) {
+                              const delta = parseInt(bits.slice(pos, pos + 11), 2);
+                              pos += 11;
 
-                      const cp = base + delta;
-                      cluster.push(String.fromCodePoint(cp));
+                              const cp = base + delta;
+                              cluster.push(String.fromCodePoint(cp));
+                          }
+
+                          output.push(cluster.join(''));
+                      }
+
+                      return checkOutput(output.join(''));
                   }
-
-                  output.push(cluster.join(''));
+                  case 1: { /* Base-64 Integer Encoding */
+                      return checkOutput(await decompress(
+                          await processOutput(convertBase$1(realstr, 64, 10), false)
+                      ));
+                  }
+                  case 2: { /* lz-string */
+                      return await processOutput(dLZ(realstr));
+                  }
+                  case 3: { /* Chunkification */
+                      let i = 0;
+                      while (i < realstr.length) {
+                          const length = realstr.charCodeAt(i) + i;
+                          i++;
+                          output.push(await decompress(realstr.slice(i, length)));
+                      }
+                      return checkOutput(output.join(''));
+                  }
+                  default: throw new Error(prefix+'Invalid compressed string');
               }
-
-              return checkOutput(output.join(''));
           }
-          case 12:
-              return checkOutput(await decompress(
-                  await processOutput(convertBase$1(realstr, 64, 10), false)
-              ));
-          case 13:
+          case 12: /* Base-64 Packing */
               let len = strcodes.code2;
               let slice = len == 16;
               if (slice) len = realstr.slice(0,1).charCodeAt(0) + 16;
               return await processOutput(decompressB64(slice ? realstr.slice(1) : realstr, len));
-          case 14:
-              let i = 0;
-              while (i < realstr.length) {
-                  const length = realstr.charCodeAt(i) + i;
-                  i++;
-                  output.push(await decompress(realstr.slice(i, length)));
-              }
-              return checkOutput(output.join(''));
-          case 29:
-              return await processOutput(dLZ(realstr));
-          case 30:
+          case 13: /* Adaptive XOR */
+              return await processOutput(decompress$1(realstr, strcodes.code2));
+          case 30: /* Offset Encoding */
               const dec = offsetDecoding(realstr, binToDec(decToBin(charcode, 16).slice(0,11)));
               return checkOutput(await decompress(dec));
-          case 31: {
+          case 31: { /* Recursive Compression */
               let out = realstr;
               const depth = strcodes.code2;
 
@@ -4939,7 +5085,7 @@ SOFTWARE.
 
   async function compressLarge(input, ...params) {
       const LENGTH = 1024;
-      const result = [charCode(cryptCharCode(14, false))];
+      const result = [charCode(cryptCharCode(11, false, false, false, undefined, undefined, false, 3))];
       
       for (let i = 0; i < input.length; i += LENGTH) {
           const chunk = input.slice(i, i + LENGTH);
@@ -5079,7 +5225,7 @@ SOFTWARE.
           base64IntegerEncoding: false,
           depth: opts.depth + 1,
       });
-      output = charCode(cryptCharCode(12, false, isNum, RLE, -1, 0, seq, code3)) + output;
+      output = charCode(cryptCharCode(11, false, isNum, RLE, -1, 1, seq, code3)) + output;
       if (!(await validate(output, originalInput))) return null;
       return output;
   }
@@ -5476,13 +5622,13 @@ SOFTWARE.
       const { data, length } = compressB64(str);
 
       let len = '';
-      if (length > 15) {
-          const lng = length - 16;
+      if (length > 14) {
+          const lng = length - 15;
           if (lng > 0xFFFF) return null;
           len = String.fromCharCode(lng);
       }
 
-      const res = charCode(cryptCharCode(13, false, repeatBefore, false, beginId, Math.min(length, 16), false, code3)) + len + data;
+      const res = charCode(cryptCharCode(12, false, repeatBefore, false, beginId, Math.min(length, 15), false, code3)) + len + data;
       if (await validate(res, originalInput)) return res;
       return null;
   }
@@ -5510,9 +5656,42 @@ SOFTWARE.
   async function LZS(context) {
       const {str, code3, repeatBefore, beginId, opts, originalInput} = context;
       if (!opts.lzstring) return null;
-      const res = charCode(cryptCharCode(29, false, repeatBefore, false, beginId, 0, false, code3)) + cLZ(str);
+      const res = charCode(cryptCharCode(11, false, repeatBefore, false, beginId, 2, false, code3)) + cLZ(str);
       if (await validate(res, originalInput)) return res;
       return null;
+  }
+
+  /*
+   * Adaptive XOR
+   */
+  async function AXOR(context) {
+      const {str, code3, repeatBefore, beginId, originalInput} = context;
+      const [compressed, mode] = compress$1(str);
+      const res = charCode(cryptCharCode(13, false, repeatBefore, false, beginId, mode, false, code3)) + compressed;
+      if (await validate(res, originalInput)) return res;
+      return null;
+  }
+
+  let customWorkerURL = null;
+  function setWorkerURL(url) {
+      if (
+          (typeof url != 'string' && typeof url != 'object' && typeof url != 'undefined') ||
+          (
+              typeof url == 'string' && (()=>{
+                  try {
+                      new URL(url);
+                      return false;
+                  } catch {
+                      return true;
+                  }
+              })()
+          )
+      ) throw new Error(prefix+'invalid URL.');
+      customWorkerURL = url;
+  }
+  function getWorkerURL() {
+      if (typeof customWorkerURL == 'string' || typeof customWorkerURL == 'object') return customWorkerURL;
+      return workerURL;
   }
 
   if ((String.fromCharCode(65536).charCodeAt(0) === 65536) || !(String.fromCharCode(256).charCodeAt(0) === 256)) {
@@ -5535,6 +5714,14 @@ SOFTWARE.
           return validateCache.size;
       }
   };
+  const worker = {
+      get['url'] () {
+          return getWorkerURL();
+      },
+      set['url'] (url) {
+          setWorkerURL(url);
+      }
+  };
 
   exports.cache = cache;
   exports.compress = compress;
@@ -5544,5 +5731,6 @@ SOFTWARE.
   exports.decompress = decompress;
   exports.decompressFromBase64 = decompressFromBase64;
   exports.version = version;
+  exports.worker = worker;
 
 }));

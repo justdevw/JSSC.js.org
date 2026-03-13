@@ -7,9 +7,10 @@ import https from 'https';
 import { fileURLToPath } from 'url';
 
 const __dirname$2 = path.dirname(fileURLToPath(import.meta.url));
-const confirmPs1 = path.resolve(__dirname$2, "./ui/confirm.ps1");
-const welcomePs1 = path.resolve(__dirname$2, "./ui/welcome.ps1");
-path.resolve(__dirname$2, "./ui/compress.ps1");
+const uiDir = path.resolve(__dirname$2, "./windows/ui");
+const confirmPs1 = path.resolve(uiDir, "./confirm.ps1");
+const welcomePs1 = path.resolve(uiDir, "./welcome.ps1");
+path.resolve(uiDir, "./compress.ps1");
 
 function confirm(title, text, repo, site) {
     try {
@@ -68,6 +69,16 @@ const name__ = 'JSSC';
 const repo = pkg.repository.url.slice(4,-4);
 const site = pkg.homepage;
 
+function message(title, message, icon = 'Error') {
+    const psCommand = `powershell -Command "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('${message}', '${title}', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::${icon})"`;
+    
+    try {
+        execSync(psCommand);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 if (process.platform !== "win32") {
     process.exit(0);
 }
@@ -99,12 +110,12 @@ const installDir = path.join(
 
 const iconPath = path.join(installDir, "jssc.ico");
 const localPkg = path.join(installDir, "pkg");
-const localBin = path.join(localPkg, "bin");
+const localBin = path.join(localPkg, "dist"); // ,"bin");
 const localCfg = path.join(installDir, "default.justc");
 const localVbs = path.join(installDir, "jssc.vbs");
 
 const pkgRoot = path.resolve(__dirname$1, "../../");
-const cliPath = path.resolve(localBin, "./index.js");
+const cliPath = path.resolve(localBin, "./cli.js"); // ,"./index.js");
 const cfgPath = path.resolve(localBin, "./windows/default.justc");
 const vbsPath = path.resolve(localBin, "./windows/jssc.vbs");
 const nodePath = process.execPath;
@@ -151,7 +162,11 @@ function showProgress() {
 async function setup() {
     const progressUI = showProgress();
 
-    await downloadIcon();
+    try {
+        await downloadIcon();
+    } catch (err) {
+        throw new Error('Failed to download icon:', err.message, '\n' + err.trace);
+    }
 
     let e = [false, undefined];
     try {
@@ -218,6 +233,8 @@ if (confirm(name__,
     '[Yes] - Install JSSC Windows integration\n' + 
     '[No] - Do not install JSSC Windows integration',
 repo, site)) setup().catch(err => {
-    console.error("Installation failed:", err.message);
+    const e = "Installation failed: " + err.message;
+    console.error(e, '\n' + err.trace);
+    message(name__, e);
     process.exit(1);
 });
