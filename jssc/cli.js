@@ -24,6 +24,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+
+
 */
 
 /*
@@ -48,7 +50,7 @@ import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
 import { Buffer } from 'node:buffer';
 
-var version$2 = "2.1.0-test.4b";
+var version$2 = "2.1.0-test.5";
 var pkg = {
 	version: version$2};
 
@@ -4550,7 +4552,7 @@ async function parseJUSTC(str) {
 /**
  * **JavaScript String Compressor - compress function.**
  * @param {string|object|number} input string
- * @param {{segmentation?: boolean, recursiveCompression?: boolean, JUSTC?: boolean, base64IntegerEncoding?: boolean, base64Packing?: boolean, offsetEncoding?: boolean, lzstring?: boolean, offsetEncode?: boolean, minifiedworker?: boolean, depthLimit?: number, workerLimit?: number, debug?: boolean}} [options]
+ * @param {{segmentation?: boolean, recursiveCompression?: boolean, JUSTC?: boolean, base64IntegerEncoding?: boolean, base64Packing?: boolean, offsetEncoding?: boolean, lzstring?: boolean, offsetEncode?: boolean, minifiedworker?: boolean, depthLimit?: number, workerLimit?: number, JSONstring?: boolean, debug?: boolean}} [options]
  * @returns {Promise<string>} Compressed string
  * @example await compress('Hello, World!');
  * @since 1.0.0
