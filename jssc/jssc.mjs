@@ -753,6 +753,7 @@ function decompressSequences(str) {
 }
 
 const B64$1 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/";
+const URL$1 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
 /**
  * This is a modified https://stackoverflow.com/a/55011290 code. https://stackoverflow.com/a/55011290 -
  * by Slavik Meltser (https://stackoverflow.com/users/1291121/slavik-meltser) -
@@ -4231,6 +4232,42 @@ function decompress$1(compressed, mode) {
     return String.fromCharCode(...original);
 }
 
+function B64toUI8A(B64) {
+    const convert = [0, 3, 2, 1];
+    const add = convert[B64.length % 4];
+    B64 = '0'.repeat(add) + B64;
+
+    const bin6 = [];
+    for (let i = 0; i < B64.length; i++) {
+        const bin = convertBase$1(B64[i], 64, 2);
+        if (bin != null) bin6.push(bin.padStart(6, '0'));
+    }
+    
+    const bin8 = stringChunks$1(bin6.join(''), 8);
+    const int8 = [add];
+    for (let i = 0; i < bin8.length; i++) {
+        int8.push(parseInt(bin8[i], 2));
+    }
+
+    return new Uint8Array(int8);
+}
+
+function UI8AtoB64(UI8A) {
+    const remove = UI8A[0];
+    const bin8 = [];
+    for (let i = 1; i < UI8A.length; i++) {
+        bin8.push(UI8A[i].toString(2).padStart(8, '0'));
+    }
+
+    const bin6 = stringChunks$1(bin8.join(''), 6);
+    const B64 = [];
+    for (let i = 0; i < bin6.length; i++) {
+        B64.push(convertBase$1(bin6[i], 2, 64));
+    }
+
+    return B64.join('').slice(remove);
+}
+
 const { eUTF8 } = (()=>{
     const { encode } = utf8;
     return { eUTF8: encode };
@@ -4657,7 +4694,6 @@ async function compress(input, options) {
         results.length == 0 ||
         results.every(c => c == null)
     )) {
-        /* workers failed */
         results = await noWorkers();
         usedWorkers = false;
     }
@@ -5063,19 +5099,33 @@ async function decompress(str, stringify = false) {
     }
 }
 
+function noDebugMode(result) {
+    if (result instanceof JSSC) throw new Error(prefix+'Invalid options input.');
+    return result;
+}
+
 async function compressToBase64(...input) {
-    const compressed = await compress(...input);
-
-    if (compressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
-
+    const compressed = noDebugMode(await compress(...input));
     return B64Padding(encode(compressed));
 }
 async function decompressFromBase64(base64, ...params) {
-    const decompressed = await decompress(decode(base64.replace(/=+$/, '')), ...params);
+    return noDebugMode(await decompress(decode(base64.replace(/=+$/, '')), ...params));
+}
 
-    if (decompressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
+async function compressToBase64URL(...input) {
+    const compressed = noDebugMode(await compress(...input));
+    return encode(compressed, 64, URL$1);
+}
+async function decompressFromBase64URL(base64url, ...params) {
+    return noDebugMode(await decompress(decode(base64url, 64, URL$1), ...params));
+}
 
-    return decompressed;
+async function compressToUint8Array(...input) {
+    const compressed = await compressToBase64(...input);
+    return B64toUI8A(compressed.replace(/=+$/, ''));
+}
+async function decompressFromUint8Array(uint8array, ...params) {
+    return await decompressFromBase64(UI8AtoB64(uint8array), ...params);
 }
 
 async function compressLarge(input, ...params) {
@@ -5091,11 +5141,16 @@ async function compressLarge(input, ...params) {
     return result.join('');
 }
 async function compressLargeToBase64(...input) {
-    const compressed = await compress(...input);
-
-    if (compressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
-
+    const compressed = noDebugMode(await compress(...input));
     return B64Padding(encode(compressed));
+}
+async function compressLargeToBase64URL(...input) {
+    const compressed = noDebugMode(await compress(...input));
+    return encode(compressed, 64, URL$1);
+}
+async function compressLargeToUint8Array(...input) {
+    const compressed = await compressLargeToBase64(...input);
+    return B64toUI8A(compressed.replace(/=+$/, ''));
 }
 
 async function validate(compressed, originalInput) {
@@ -5718,4 +5773,4 @@ const worker = {
     }
 };
 
-export { cache, compress, compressLarge, compressLargeToBase64, compressToBase64, decompress, decompressFromBase64, version, worker };
+export { cache, compress, compressLarge, compressLargeToBase64, compressLargeToBase64URL, compressLargeToUint8Array, compressToBase64, compressToBase64URL, compressToUint8Array, decompress, decompressFromBase64, decompressFromBase64URL, decompressFromUint8Array, version, worker };

@@ -4259,6 +4259,42 @@ function decompress$1(compressed, mode) {
     return String.fromCharCode(...original);
 }
 
+function B64toUI8A(B64) {
+    const convert = [0, 3, 2, 1];
+    const add = convert[B64.length % 4];
+    B64 = '0'.repeat(add) + B64;
+
+    const bin6 = [];
+    for (let i = 0; i < B64.length; i++) {
+        const bin = convertBase$1(B64[i], 64, 2);
+        if (bin != null) bin6.push(bin.padStart(6, '0'));
+    }
+    
+    const bin8 = stringChunks$1(bin6.join(''), 8);
+    const int8 = [add];
+    for (let i = 0; i < bin8.length; i++) {
+        int8.push(parseInt(bin8[i], 2));
+    }
+
+    return new Uint8Array(int8);
+}
+
+function UI8AtoB64(UI8A) {
+    const remove = UI8A[0];
+    const bin8 = [];
+    for (let i = 1; i < UI8A.length; i++) {
+        bin8.push(UI8A[i].toString(2).padStart(8, '0'));
+    }
+
+    const bin6 = stringChunks$1(bin8.join(''), 6);
+    const B64 = [];
+    for (let i = 0; i < bin6.length; i++) {
+        B64.push(convertBase$1(bin6[i], 2, 64));
+    }
+
+    return B64.join('').slice(remove);
+}
+
 const { eUTF8 } = (()=>{
     const { encode } = utf8;
     return { eUTF8: encode };
@@ -4685,7 +4721,6 @@ async function compress$1(input, options) {
         results.length == 0 ||
         results.every(c => c == null)
     )) {
-        /* workers failed */
         results = await noWorkers();
         usedWorkers = false;
     }
@@ -5091,25 +5126,20 @@ async function decompress(str, stringify = false) {
     }
 }
 
+function noDebugMode(result) {
+    if (result instanceof JSSC) throw new Error(prefix+'Invalid options input.');
+    return result;
+}
+
 async function compressToBase64(...input) {
-    const compressed = await compress$1(...input);
-
-    if (compressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
-
+    const compressed = noDebugMode(await compress$1(...input));
     return B64Padding(encode(compressed));
 }
 async function decompressFromBase64(base64, ...params) {
-    const decompressed = await decompress(decode(base64.replace(/=+$/, '')), ...params);
-
-    if (decompressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
-
-    return decompressed;
+    return noDebugMode(await decompress(decode(base64.replace(/=+$/, '')), ...params));
 }
 async function compressLargeToBase64(...input) {
-    const compressed = await compress$1(...input);
-
-    if (compressed instanceof JSSC) throw new Error(prefix+'Invalid options input.');
-
+    const compressed = noDebugMode(await compress$1(...input));
     return B64Padding(encode(compressed));
 }
 
@@ -8693,42 +8723,6 @@ function version() {
     const minor = int8(semver.minor);
     const patch = int8(semver.patch);
     return concat([major, minor, patch]);
-}
-
-function B64toUI8A(B64) {
-    const convert = [0, 3, 2, 1];
-    const add = convert[B64.length % 4];
-    B64 = '0'.repeat(add) + B64;
-
-    const bin6 = [];
-    for (let i = 0; i < B64.length; i++) {
-        const bin = convertBase$1(B64[i], 64, 2);
-        if (bin != null) bin6.push(bin.padStart(6, '0'));
-    }
-    
-    const bin8 = stringChunks$1(bin6.join(''), 8);
-    const int8 = [add];
-    for (let i = 0; i < bin8.length; i++) {
-        int8.push(parseInt(bin8[i], 2));
-    }
-
-    return new Uint8Array(int8);
-}
-
-function UI8AtoB64(UI8A) {
-    const remove = UI8A[0];
-    const bin8 = [];
-    for (let i = 1; i < UI8A.length; i++) {
-        bin8.push(UI8A[i].toString(2).padStart(8, '0'));
-    }
-
-    const bin6 = stringChunks$1(bin8.join(''), 6);
-    const B64 = [];
-    for (let i = 0; i < bin6.length; i++) {
-        B64.push(convertBase$1(bin6[i], 2, 64));
-    }
-
-    return B64.join('').slice(remove);
 }
 
 function int32(n, le = true) {

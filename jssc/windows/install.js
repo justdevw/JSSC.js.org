@@ -3,7 +3,6 @@ import { execSync, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import https from 'https';
 import { fileURLToPath } from 'url';
 
 const __dirname$2 = path.dirname(fileURLToPath(import.meta.url));
@@ -99,7 +98,6 @@ if (
 const __filename$1 = fileURLToPath(import.meta.url);
 const __dirname$1 = path.dirname(__filename$1);
 
-const ICON_URL = "https://jssc.js.org/favicon.ico";
 const APP_NAME = "JSSC";
 const EXT = ".jssc";
 
@@ -110,14 +108,15 @@ const installDir = path.join(
 
 const iconPath = path.join(installDir, "jssc.ico");
 const localPkg = path.join(installDir, "pkg");
-const localBin = path.join(localPkg, "dist"); // ,"bin");
+const localBin = path.join(localPkg, "dist");
 const localCfg = path.join(installDir, "default.justc");
 const localVbs = path.join(installDir, "jssc.vbs");
 
 const pkgRoot = path.resolve(__dirname$1, "../../");
-const cliPath = path.resolve(localBin, "./cli.js"); // ,"./index.js");
+const cliPath = path.resolve(localBin, "./cli.js");
 const cfgPath = path.resolve(localBin, "./windows/default.justc");
 const vbsPath = path.resolve(localBin, "./windows/jssc.vbs");
+const icoPath = path.resolve(localBin, "./windows/icon.ico");
 const nodePath = process.execPath;
 
 const ui = path.resolve(__dirname$1, "./ui");
@@ -125,28 +124,6 @@ const uiProgressBar = path.resolve(ui, "./wait.ps1");
 
 function run(cmd) {
     execSync(cmd, { stdio: "inherit" });
-}
-
-function downloadIcon() {
-    return new Promise((resolve, reject) => {
-        if (!fs.existsSync(installDir)) {
-            fs.mkdirSync(installDir, { recursive: true });
-        }
-
-        const file = fs.createWriteStream(iconPath);
-
-        https.get(ICON_URL, res => {
-            if (res.statusCode !== 200) {
-                reject(new Error("Failed to download icon"));
-                return;
-            }
-
-            res.pipe(file);
-            file.on("finish", () => {
-                file.close(resolve);
-            });
-        }).on("error", reject);
-    });
 }
 
 function showProgress() {
@@ -162,12 +139,6 @@ function showProgress() {
 async function setup() {
     const progressUI = showProgress();
 
-    try {
-        await downloadIcon();
-    } catch (err) {
-        throw new Error('Failed to download icon:', err.message, '\n' + err.trace);
-    }
-
     let e = [false, undefined];
     try {
         fs.mkdirSync(localPkg, {
@@ -178,9 +149,8 @@ async function setup() {
             force: true
         });
         fs.copyFileSync(cfgPath, localCfg);
-        fs.rmSync(cfgPath);
         fs.copyFileSync(vbsPath, localVbs);
-        fs.rmSync(vbsPath);
+        fs.copyFileSync(icoPath, iconPath);
 
         const vbs = `wscript.exe \\"${localVbs}\\" \\"${nodePath}\\" \\"${cliPath}\\"`;
 
