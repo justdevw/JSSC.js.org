@@ -46,7 +46,7 @@ SOFTWARE.
 var JUSTC = require('justc');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
-var version$1 = "2.1.0-test.5";
+var version$1 = "2.1.1-a";
 var pkg = {
 	version: version$1};
 

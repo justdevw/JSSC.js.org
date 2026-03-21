@@ -50,7 +50,7 @@ import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
 import { Buffer } from 'node:buffer';
 
-var version$2 = "2.1.0-test.5";
+var version$2 = "2.1.1-a";
 var pkg = {
 	version: version$2};
 
@@ -5735,7 +5735,7 @@ if ((String.fromCharCode(65536).charCodeAt(0) === 65536) || !(String.fromCharCod
 var _import = {exports: {}};
 
 const __dirname$2 = path.dirname(fileURLToPath(import.meta.url));
-const uiDir = path.resolve(__dirname$2, "./windows/ui");
+const uiDir = path.resolve(__dirname$2, "./ui");
 const confirmPs1 = path.resolve(uiDir, "./confirm.ps1");
 const welcomePs1 = path.resolve(uiDir, "./welcome.ps1");
 const compresPs1 = path.resolve(uiDir, "./compress.ps1");
