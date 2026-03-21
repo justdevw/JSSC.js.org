@@ -41,7 +41,7 @@ SOFTWARE.
 
 import JUSTC from 'justc';
 
-var version$1 = "2.1.0-test.3";
+var version$1 = "2.1.0-test.4b";
 var pkg = {
 	version: version$1};
 
@@ -4491,6 +4491,35 @@ async function validateOffsetEncoding(string, inp, group) {
     }
 }
 
+async function parseJUSTC(str) {
+    try {
+        const result = JUSTC.parse(str);
+
+        if (result && typeof result.then === 'function') {
+            return await result;
+        }
+
+        return result;
+    } catch (err) {
+        if (typeof window !== 'undefined') { /* Browsers */
+            try {
+                await JUSTC.initialize();
+
+                const retry = JUSTC.parse(str);
+                if (retry && typeof retry.then === 'function') {
+                    return await retry;
+                }
+
+                return retry;
+            } catch {
+                return null;
+            }
+        }
+
+        return null;
+    }
+}
+
 /**
  * **JavaScript String Compressor - compress function.**
  * @param {string|object|number} input string
@@ -4514,6 +4543,7 @@ async function compress(input, options) {
         minifiedworker: true,
         depthlimit: 10,
         workerlimit: 2,
+        jsonstring: false,
         debug: false,
 
         depth: 0,
@@ -4569,9 +4599,15 @@ async function compress(input, options) {
         } else
         /* JSON Object (as object) */
         if (typeof str == 'object') try {
+            let JUSTCstr = undefined;
             if (opts.justc) {
                 const JUSTCobj = await toJUSTC(str);
-                str = JUSTCobj;
+                const JSONstr = JSON.stringify(await parseJUSTC(JUSTCobj));
+                if (JSONstr == JSON.stringify(str)) JUSTCstr = JUSTCobj;
+            }
+
+            if (typeof JUSTCstr != 'undefined') {
+                str = JUSTCstr;
                 code3 = 2;
             } else {
                 str = JSON.stringify(str);
@@ -4586,16 +4622,21 @@ async function compress(input, options) {
             const obj = JSON.parse(str);
             if (!Array.isArray(obj) && typeof obj == 'object') {
             
-            const JUSTCobj = opts.justc ? await toJUSTC(obj) : false;
+            let JUSTCstr = undefined;
+            if (opts.justc && opts.jsonstring) {
+                const JUSTCobj = await toJUSTC(obj);
+                const JSONstr = JSON.stringify(await parseJUSTC(JUSTCobj));
+                if (JSONstr == JSON.stringify(str)) JUSTCstr = JUSTCobj;
+            }
 
-            if (JUSTCobj && JUSTCobj.length < str.length && str == JSON.stringify(obj)) {                
-                str = JUSTCobj;
+            if (typeof JUSTCstr != 'undefined' && JUSTCstr.length < str.length && str == JSON.stringify(obj)) {                
+                str = JUSTCstr;
                 code3 = 1;
             } else {
                 str = str.slice(1,-1);
                 code3 = 5;
             }
-        } else if (typeof obj == 'object') {
+        } else if (typeof obj == 'object' && Array.isArray(obj)) {
         /* JSON Array (as string) */
         str = str.slice(1,-1);
         code3 = 3;
@@ -4754,35 +4795,6 @@ function characterEncodings(id, realstr) {
             }
         }
         return output.join('');
-    }
-}
-
-async function parseJUSTC(str) {
-    try {
-        const result = JUSTC.parse(str);
-
-        if (result && typeof result.then === 'function') {
-            return await result;
-        }
-
-        return result;
-    } catch (err) {
-        if (typeof window !== 'undefined') { /* Browsers */
-            try {
-                await JUSTC.initialize();
-
-                const retry = JUSTC.parse(str);
-                if (retry && typeof retry.then === 'function') {
-                    return await retry;
-                }
-
-                return retry;
-            } catch {
-                return null;
-            }
-        }
-
-        return null;
     }
 }
 
