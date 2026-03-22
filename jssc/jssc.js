@@ -48,7 +48,7 @@ SOFTWARE.
 })(this, (function (exports, JUSTC) { 'use strict';
 
   var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
-  var version$1 = "2.1.1-b";
+  var version$1 = "2.1.1-c";
   var pkg = {
   	version: version$1};
 
@@ -4639,11 +4639,11 @@ SOFTWARE.
               if (typeof JUSTCstr != 'undefined' && JUSTCstr.length < str.length && str == JSON.stringify(obj)) {                
                   str = JUSTCstr;
                   code3 = 1;
-              } else {
+              } else if (str.startsWith('{') && str.endsWith('}')) {
                   str = str.slice(1,-1);
                   code3 = 5;
               }
-          } else if (typeof obj == 'object' && Array.isArray(obj)) {
+          } else if (typeof obj == 'object' && Array.isArray(obj) && str.startsWith('[') && str.endsWith(']')) {
           /* JSON Array (as string) */
           str = str.slice(1,-1);
           code3 = 3;

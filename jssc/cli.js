@@ -50,7 +50,7 @@ import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
 import { Buffer } from 'node:buffer';
 
-var version$2 = "2.1.1-b";
+var version$2 = "2.1.1-c";
 var pkg = {
 	version: version$2};
 
@@ -4661,11 +4661,11 @@ async function compress$1(input, options) {
             if (typeof JUSTCstr != 'undefined' && JUSTCstr.length < str.length && str == JSON.stringify(obj)) {                
                 str = JUSTCstr;
                 code3 = 1;
-            } else {
+            } else if (str.startsWith('{') && str.endsWith('}')) {
                 str = str.slice(1,-1);
                 code3 = 5;
             }
-        } else if (typeof obj == 'object' && Array.isArray(obj)) {
+        } else if (typeof obj == 'object' && Array.isArray(obj) && str.startsWith('[') && str.endsWith(']')) {
         /* JSON Array (as string) */
         str = str.slice(1,-1);
         code3 = 3;
@@ -8833,7 +8833,7 @@ async function toFile(isDir, extn, files, dirs, useCRC32, startsWithDot) {
     }
 
     const npfiles = [[
-        name__,
+        '',
         files[0] ? files[0][1] : null
     ]];
     const checksum = int32(crc32.str(JSON.stringify(
@@ -9402,15 +9402,22 @@ function findEmptyDirs(dir) {
                 const delta = (await decompressFromBase64(filePath)).replaceAll("/", path.sep);
 
                 let fullPath;
+                const dot = (startsWithDot ? '.' : '');
+                let ext = '';
                 if (typeof current === "undefined") {
                     fullPath = path.resolve(output[0], delta);
                 } else {
                     fullPath = path.resolve(path.dirname(current), delta);
                 }
                 if (!isDir) {
-                    fullPath = output[0] + (startsWithDot ? '.' : '') + decompressFromBase64(extn);
+                    ext = await decompressFromBase64(extn);
+                    fullPath = output[0] + dot + ext;
                 }
-                current = checkPath(fullPath);
+
+                const isRootFile = (
+                    files.length === 1 && filePath === '' && !isDir
+                );
+                if (!isRootFile) current = checkPath(fullPath);
 
                 fs.mkdirSync(path.dirname(fullPath), { recursive: true });
                 fs.writeFileSync(fullPath, await decompressFromBase64(content), { encoding: "utf8" });
