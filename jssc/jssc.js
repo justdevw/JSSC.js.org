@@ -48,7 +48,7 @@ SOFTWARE.
 })(this, (function (exports, JUSTC) { 'use strict';
 
   var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
-  var version$1 = "2.1.1-a";
+  var version$1 = "2.1.1-b";
   var pkg = {
   	version: version$1};
 
@@ -4633,7 +4633,7 @@ SOFTWARE.
               if (opts.justc && opts.jsonstring) {
                   const JUSTCobj = await toJUSTC(obj);
                   const JSONstr = JSON.stringify(await parseJUSTC(JUSTCobj));
-                  if (JSONstr == JSON.stringify(str)) JUSTCstr = JUSTCobj;
+                  if (JSONstr == JSON.stringify(obj)) JUSTCstr = JUSTCobj;
               }
 
               if (typeof JUSTCstr != 'undefined' && JUSTCstr.length < str.length && str == JSON.stringify(obj)) {                
@@ -5149,22 +5149,24 @@ SOFTWARE.
 
   async function compressLarge(input, ...params) {
       const LENGTH = 1024;
+      if (input.length < LENGTH || typeof input != 'string') return await compress(input, ...params);
+
       const result = [charCode(cryptCharCode(11, false, false, false, undefined, undefined, false, 3))];
       
       for (let i = 0; i < input.length; i += LENGTH) {
           const chunk = input.slice(i, i + LENGTH);
-          const compressed = await compress(chunk, ...params);
+          const compressed = noDebugMode(await compress(chunk, ...params));
           result.push(String.fromCharCode(compressed.length), compressed);
       }
 
       return result.join('');
   }
   async function compressLargeToBase64(...input) {
-      const compressed = noDebugMode(await compress(...input));
+      const compressed = await compressLarge(...input);
       return B64Padding(encode(compressed));
   }
   async function compressLargeToBase64URL(...input) {
-      const compressed = noDebugMode(await compress(...input));
+      const compressed = await compressLarge(...input);
       return encode(compressed, 64, URL$1);
   }
   async function compressLargeToUint8Array(...input) {

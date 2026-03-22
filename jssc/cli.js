@@ -50,7 +50,7 @@ import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
 import { Buffer } from 'node:buffer';
 
-var version$2 = "2.1.1-a";
+var version$2 = "2.1.1-b";
 var pkg = {
 	version: version$2};
 
@@ -4655,7 +4655,7 @@ async function compress$1(input, options) {
             if (opts.justc && opts.jsonstring) {
                 const JUSTCobj = await toJUSTC(obj);
                 const JSONstr = JSON.stringify(await parseJUSTC(JUSTCobj));
-                if (JSONstr == JSON.stringify(str)) JUSTCstr = JUSTCobj;
+                if (JSONstr == JSON.stringify(obj)) JUSTCstr = JUSTCobj;
             }
 
             if (typeof JUSTCstr != 'undefined' && JUSTCstr.length < str.length && str == JSON.stringify(obj)) {                
@@ -5152,8 +5152,23 @@ async function compressToBase64(...input) {
 async function decompressFromBase64(base64, ...params) {
     return noDebugMode(await decompress(decode(base64.replace(/=+$/, '')), ...params));
 }
+
+async function compressLarge(input, ...params) {
+    const LENGTH = 1024;
+    if (input.length < LENGTH || typeof input != 'string') return await compress$1(input, ...params);
+
+    const result = [charCode(cryptCharCode(11, false, false, false, undefined, undefined, false, 3))];
+    
+    for (let i = 0; i < input.length; i += LENGTH) {
+        const chunk = input.slice(i, i + LENGTH);
+        const compressed = noDebugMode(await compress$1(chunk, ...params));
+        result.push(String.fromCharCode(compressed.length), compressed);
+    }
+
+    return result.join('');
+}
 async function compressLargeToBase64(...input) {
-    const compressed = noDebugMode(await compress$1(...input));
+    const compressed = await compressLarge(...input);
     return B64Padding(encode(compressed));
 }
 
@@ -5738,7 +5753,7 @@ const __dirname$2 = path.dirname(fileURLToPath(import.meta.url));
 const uiDir = path.resolve(__dirname$2, "./ui");
 const confirmPs1 = path.resolve(uiDir, "./confirm.ps1");
 const welcomePs1 = path.resolve(uiDir, "./welcome.ps1");
-const compresPs1 = path.resolve(uiDir, "./compress.ps1");
+const compresPs1 = path.resolve(__dirname$2, "./windows/ui/compress.ps1");
 
 function confirm(title, text, repo, site) {
     try {
@@ -8774,7 +8789,7 @@ async function toFile(isDir, extn, files, dirs, useCRC32, startsWithDot) {
         ? undefined
         : concat(data(B64toUI8A(extn)));
 
-    const noPath = files.length == 1;
+    const noPath = !isDir && files.length == 1;
     const output = [];
     const files8 = [];
     let need = 1;
@@ -8918,7 +8933,7 @@ async function fromFile(uint8) {
 
         if (content == 0) dirs.push(path);
         else files.push([
-            path == 0 ? name__ : path, content
+            path == 0 ? '' : path, content
         ]);
 
         if (i == uint8.length) break;
@@ -9393,7 +9408,7 @@ function findEmptyDirs(dir) {
                     fullPath = path.resolve(path.dirname(current), delta);
                 }
                 if (!isDir) {
-                    fullPath += (startsWithDot ? '.' : '') + await decompressFromBase64(extn);
+                    fullPath = output[0] + (startsWithDot ? '.' : '') + decompressFromBase64(extn);
                 }
                 current = checkPath(fullPath);
 

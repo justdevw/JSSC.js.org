@@ -9,7 +9,7 @@ const __dirname$2 = path.dirname(fileURLToPath(import.meta.url));
 const uiDir = path.resolve(__dirname$2, "./ui");
 const confirmPs1 = path.resolve(uiDir, "./confirm.ps1");
 const welcomePs1 = path.resolve(uiDir, "./welcome.ps1");
-path.resolve(uiDir, "./compress.ps1");
+path.resolve(__dirname$2, "./windows/ui/compress.ps1");
 
 function confirm(title, text, repo, site) {
     try {

@@ -4505,7 +4505,7 @@ async function compress(input, options) {
             if (opts.justc && opts.jsonstring) {
                 const JUSTCobj = await toJUSTC(obj);
                 const JSONstr = JSON.stringify(await parseJUSTC(JUSTCobj));
-                if (JSONstr == JSON.stringify(str)) JUSTCstr = JUSTCobj;
+                if (JSONstr == JSON.stringify(obj)) JUSTCstr = JUSTCobj;
             }
 
             if (typeof JUSTCstr != 'undefined' && JUSTCstr.length < str.length && str == JSON.stringify(obj)) {                
