@@ -43,7 +43,7 @@ SOFTWARE.
 
 import JUSTC from 'justc';
 
-var version$1 = "2.1.1-c";
+var version$1 = "2.1.1-d";
 var pkg = {
 	version: version$1};
 
@@ -77,7 +77,7 @@ function checkChar(cde) {
     return cde % 65535 === cde
 }
 
-function stringChunks$1(str, num) {
+function stringChunks(str, num) {
     const output = [];
     for (let i = 0; i < str.length; i += num) {
         output.push(str.slice(i, i + num));
@@ -97,18 +97,6 @@ function decToBin(num, wnum) {
 }
 function binToDec(str) {
     return parseInt(str, 2);
-}
-
-function B64Padding(str) {    
-    const padding = str.length % 4;
-
-    if (padding === 2) {
-        str += '==';
-    } else if (padding === 3) {
-        str += '=';
-    }
-
-    return str;
 }
 
 const freqMap = {
@@ -876,7 +864,7 @@ function compressB64(str) {
     const { bin, len } = packB64(numbers);
 
     const result = [];
-    for (const chunk of stringChunks$1(bin, 16)) {
+    for (const chunk of stringChunks(bin, 16)) {
         result.push(String.fromCharCode(binToDec(chunk)));
     }
 
@@ -973,2207 +961,43 @@ function convertBase(str, fromBase, toBase, DIGITS = B64) {
     return out;
 }
 
-var emojiObject = {
-	"😀": true,
-	"😃": true,
-	"😄": true,
-	"😁": true,
-	"😆": true,
-	"😅": true,
-	"🤣": true,
-	"😂": true,
-	"🙂": true,
-	"🙃": true,
-	"🫠": true,
-	"😉": true,
-	"😊": true,
-	"😇": true,
-	"🥰": true,
-	"😍": true,
-	"🤩": true,
-	"😘": true,
-	"😗": true,
-	"☺️": true,
-	"😚": true,
-	"😙": true,
-	"🥲": true,
-	"😋": true,
-	"😛": true,
-	"😜": true,
-	"🤪": true,
-	"😝": true,
-	"🤑": true,
-	"🤗": true,
-	"🤭": true,
-	"🫢": true,
-	"🫣": true,
-	"🤫": true,
-	"🤔": true,
-	"🫡": true,
-	"🤐": true,
-	"🤨": true,
-	"😐": true,
-	"😑": true,
-	"😶": true,
-	"🫥": true,
-	"😶‍🌫️": true,
-	"😏": true,
-	"😒": true,
-	"🙄": true,
-	"😬": true,
-	"😮‍💨": true,
-	"🤥": true,
-	"🫨": true,
-	"🙂‍↔️": true,
-	"🙂‍↕️": true,
-	"😌": true,
-	"😔": true,
-	"😪": true,
-	"🤤": true,
-	"😴": true,
-	"🫩": true,
-	"😷": true,
-	"🤒": true,
-	"🤕": true,
-	"🤢": true,
-	"🤮": true,
-	"🤧": true,
-	"🥵": true,
-	"🥶": true,
-	"🥴": true,
-	"😵": true,
-	"😵‍💫": true,
-	"🤯": true,
-	"🤠": true,
-	"🥳": true,
-	"🥸": true,
-	"😎": true,
-	"🤓": true,
-	"🧐": true,
-	"😕": true,
-	"🫤": true,
-	"😟": true,
-	"🙁": true,
-	"☹️": true,
-	"😮": true,
-	"😯": true,
-	"😲": true,
-	"😳": true,
-	"🥺": true,
-	"🥹": true,
-	"😦": true,
-	"😧": true,
-	"😨": true,
-	"😰": true,
-	"😥": true,
-	"😢": true,
-	"😭": true,
-	"😱": true,
-	"😖": true,
-	"😣": true,
-	"😞": true,
-	"😓": true,
-	"😩": true,
-	"😫": true,
-	"🥱": true,
-	"😤": true,
-	"😡": true,
-	"😠": true,
-	"🤬": true,
-	"😈": true,
-	"👿": true,
-	"💀": true,
-	"☠️": true,
-	"💩": true,
-	"🤡": true,
-	"👹": true,
-	"👺": true,
-	"👻": true,
-	"👽": true,
-	"👾": true,
-	"🤖": true,
-	"😺": true,
-	"😸": true,
-	"😹": true,
-	"😻": true,
-	"😼": true,
-	"😽": true,
-	"🙀": true,
-	"😿": true,
-	"😾": true,
-	"🙈": true,
-	"🙉": true,
-	"🙊": true,
-	"💌": true,
-	"💘": true,
-	"💝": true,
-	"💖": true,
-	"💗": true,
-	"💓": true,
-	"💞": true,
-	"💕": true,
-	"💟": true,
-	"❣️": true,
-	"💔": true,
-	"❤️‍🔥": true,
-	"❤️‍🩹": true,
-	"❤️": true,
-	"🩷": true,
-	"🧡": true,
-	"💛": true,
-	"💚": true,
-	"💙": true,
-	"🩵": true,
-	"💜": true,
-	"🤎": true,
-	"🖤": true,
-	"🩶": true,
-	"🤍": true,
-	"💋": true,
-	"💯": true,
-	"💢": true,
-	"💥": true,
-	"💫": true,
-	"💦": true,
-	"💨": true,
-	"🕳️": true,
-	"💬": true,
-	"👁️‍🗨️": true,
-	"🗨️": true,
-	"🗯️": true,
-	"💭": true,
-	"💤": true,
-	"👋": true,
-	"🤚": true,
-	"🖐️": true,
-	"✋": true,
-	"🖖": true,
-	"🫱": true,
-	"🫲": true,
-	"🫳": true,
-	"🫴": true,
-	"🫷": true,
-	"🫸": true,
-	"👌": true,
-	"🤌": true,
-	"🤏": true,
-	"✌️": true,
-	"🤞": true,
-	"🫰": true,
-	"🤟": true,
-	"🤘": true,
-	"🤙": true,
-	"👈": true,
-	"👉": true,
-	"👆": true,
-	"🖕": true,
-	"👇": true,
-	"☝️": true,
-	"🫵": true,
-	"👍": true,
-	"👎": true,
-	"✊": true,
-	"👊": true,
-	"🤛": true,
-	"🤜": true,
-	"👏": true,
-	"🙌": true,
-	"🫶": true,
-	"👐": true,
-	"🤲": true,
-	"🤝": true,
-	"🙏": true,
-	"✍️": true,
-	"💅": true,
-	"🤳": true,
-	"💪": true,
-	"🦾": true,
-	"🦿": true,
-	"🦵": true,
-	"🦶": true,
-	"👂": true,
-	"🦻": true,
-	"👃": true,
-	"🧠": true,
-	"🫀": true,
-	"🫁": true,
-	"🦷": true,
-	"🦴": true,
-	"👀": true,
-	"👁️": true,
-	"👅": true,
-	"👄": true,
-	"🫦": true,
-	"👶": true,
-	"🧒": true,
-	"👦": true,
-	"👧": true,
-	"🧑": true,
-	"👱": true,
-	"👨": true,
-	"🧔": true,
-	"🧔‍♂️": true,
-	"🧔‍♀️": true,
-	"👨‍🦰": true,
-	"👨‍🦱": true,
-	"👨‍🦳": true,
-	"👨‍🦲": true,
-	"👩": true,
-	"👩‍🦰": true,
-	"🧑‍🦰": true,
-	"👩‍🦱": true,
-	"🧑‍🦱": true,
-	"👩‍🦳": true,
-	"🧑‍🦳": true,
-	"👩‍🦲": true,
-	"🧑‍🦲": true,
-	"👱‍♀️": true,
-	"👱‍♂️": true,
-	"🧓": true,
-	"👴": true,
-	"👵": true,
-	"🙍": true,
-	"🙍‍♂️": true,
-	"🙍‍♀️": true,
-	"🙎": true,
-	"🙎‍♂️": true,
-	"🙎‍♀️": true,
-	"🙅": true,
-	"🙅‍♂️": true,
-	"🙅‍♀️": true,
-	"🙆": true,
-	"🙆‍♂️": true,
-	"🙆‍♀️": true,
-	"💁": true,
-	"💁‍♂️": true,
-	"💁‍♀️": true,
-	"🙋": true,
-	"🙋‍♂️": true,
-	"🙋‍♀️": true,
-	"🧏": true,
-	"🧏‍♂️": true,
-	"🧏‍♀️": true,
-	"🙇": true,
-	"🙇‍♂️": true,
-	"🙇‍♀️": true,
-	"🤦": true,
-	"🤦‍♂️": true,
-	"🤦‍♀️": true,
-	"🤷": true,
-	"🤷‍♂️": true,
-	"🤷‍♀️": true,
-	"🧑‍⚕️": true,
-	"👨‍⚕️": true,
-	"👩‍⚕️": true,
-	"🧑‍🎓": true,
-	"👨‍🎓": true,
-	"👩‍🎓": true,
-	"🧑‍🏫": true,
-	"👨‍🏫": true,
-	"👩‍🏫": true,
-	"🧑‍⚖️": true,
-	"👨‍⚖️": true,
-	"👩‍⚖️": true,
-	"🧑‍🌾": true,
-	"👨‍🌾": true,
-	"👩‍🌾": true,
-	"🧑‍🍳": true,
-	"👨‍🍳": true,
-	"👩‍🍳": true,
-	"🧑‍🔧": true,
-	"👨‍🔧": true,
-	"👩‍🔧": true,
-	"🧑‍🏭": true,
-	"👨‍🏭": true,
-	"👩‍🏭": true,
-	"🧑‍💼": true,
-	"👨‍💼": true,
-	"👩‍💼": true,
-	"🧑‍🔬": true,
-	"👨‍🔬": true,
-	"👩‍🔬": true,
-	"🧑‍💻": true,
-	"👨‍💻": true,
-	"👩‍💻": true,
-	"🧑‍🎤": true,
-	"👨‍🎤": true,
-	"👩‍🎤": true,
-	"🧑‍🎨": true,
-	"👨‍🎨": true,
-	"👩‍🎨": true,
-	"🧑‍✈️": true,
-	"👨‍✈️": true,
-	"👩‍✈️": true,
-	"🧑‍🚀": true,
-	"👨‍🚀": true,
-	"👩‍🚀": true,
-	"🧑‍🚒": true,
-	"👨‍🚒": true,
-	"👩‍🚒": true,
-	"👮": true,
-	"👮‍♂️": true,
-	"👮‍♀️": true,
-	"🕵️": true,
-	"🕵️‍♂️": true,
-	"🕵️‍♀️": true,
-	"💂": true,
-	"💂‍♂️": true,
-	"💂‍♀️": true,
-	"🥷": true,
-	"👷": true,
-	"👷‍♂️": true,
-	"👷‍♀️": true,
-	"🫅": true,
-	"🤴": true,
-	"👸": true,
-	"👳": true,
-	"👳‍♂️": true,
-	"👳‍♀️": true,
-	"👲": true,
-	"🧕": true,
-	"🤵": true,
-	"🤵‍♂️": true,
-	"🤵‍♀️": true,
-	"👰": true,
-	"👰‍♂️": true,
-	"👰‍♀️": true,
-	"🤰": true,
-	"🫃": true,
-	"🫄": true,
-	"🤱": true,
-	"👩‍🍼": true,
-	"👨‍🍼": true,
-	"🧑‍🍼": true,
-	"👼": true,
-	"🎅": true,
-	"🤶": true,
-	"🧑‍🎄": true,
-	"🦸": true,
-	"🦸‍♂️": true,
-	"🦸‍♀️": true,
-	"🦹": true,
-	"🦹‍♂️": true,
-	"🦹‍♀️": true,
-	"🧙": true,
-	"🧙‍♂️": true,
-	"🧙‍♀️": true,
-	"🧚": true,
-	"🧚‍♂️": true,
-	"🧚‍♀️": true,
-	"🧛": true,
-	"🧛‍♂️": true,
-	"🧛‍♀️": true,
-	"🧜": true,
-	"🧜‍♂️": true,
-	"🧜‍♀️": true,
-	"🧝": true,
-	"🧝‍♂️": true,
-	"🧝‍♀️": true,
-	"🧞": true,
-	"🧞‍♂️": true,
-	"🧞‍♀️": true,
-	"🧟": true,
-	"🧟‍♂️": true,
-	"🧟‍♀️": true,
-	"🧌": true,
-	"💆": true,
-	"💆‍♂️": true,
-	"💆‍♀️": true,
-	"💇": true,
-	"💇‍♂️": true,
-	"💇‍♀️": true,
-	"🚶": true,
-	"🚶‍♂️": true,
-	"🚶‍♀️": true,
-	"🚶‍➡️": true,
-	"🚶‍♀️‍➡️": true,
-	"🚶‍♂️‍➡️": true,
-	"🧍": true,
-	"🧍‍♂️": true,
-	"🧍‍♀️": true,
-	"🧎": true,
-	"🧎‍♂️": true,
-	"🧎‍♀️": true,
-	"🧎‍➡️": true,
-	"🧎‍♀️‍➡️": true,
-	"🧎‍♂️‍➡️": true,
-	"🧑‍🦯": true,
-	"🧑‍🦯‍➡️": true,
-	"👨‍🦯": true,
-	"👨‍🦯‍➡️": true,
-	"👩‍🦯": true,
-	"👩‍🦯‍➡️": true,
-	"🧑‍🦼": true,
-	"🧑‍🦼‍➡️": true,
-	"👨‍🦼": true,
-	"👨‍🦼‍➡️": true,
-	"👩‍🦼": true,
-	"👩‍🦼‍➡️": true,
-	"🧑‍🦽": true,
-	"🧑‍🦽‍➡️": true,
-	"👨‍🦽": true,
-	"👨‍🦽‍➡️": true,
-	"👩‍🦽": true,
-	"👩‍🦽‍➡️": true,
-	"🏃": true,
-	"🏃‍♂️": true,
-	"🏃‍♀️": true,
-	"🏃‍➡️": true,
-	"🏃‍♀️‍➡️": true,
-	"🏃‍♂️‍➡️": true,
-	"💃": true,
-	"🕺": true,
-	"🕴️": true,
-	"👯": true,
-	"👯‍♂️": true,
-	"👯‍♀️": true,
-	"🧖": true,
-	"🧖‍♂️": true,
-	"🧖‍♀️": true,
-	"🧗": true,
-	"🧗‍♂️": true,
-	"🧗‍♀️": true,
-	"🤺": true,
-	"🏇": true,
-	"⛷️": true,
-	"🏂": true,
-	"🏌️": true,
-	"🏌️‍♂️": true,
-	"🏌️‍♀️": true,
-	"🏄": true,
-	"🏄‍♂️": true,
-	"🏄‍♀️": true,
-	"🚣": true,
-	"🚣‍♂️": true,
-	"🚣‍♀️": true,
-	"🏊": true,
-	"🏊‍♂️": true,
-	"🏊‍♀️": true,
-	"⛹️": true,
-	"⛹️‍♂️": true,
-	"⛹️‍♀️": true,
-	"🏋️": true,
-	"🏋️‍♂️": true,
-	"🏋️‍♀️": true,
-	"🚴": true,
-	"🚴‍♂️": true,
-	"🚴‍♀️": true,
-	"🚵": true,
-	"🚵‍♂️": true,
-	"🚵‍♀️": true,
-	"🤸": true,
-	"🤸‍♂️": true,
-	"🤸‍♀️": true,
-	"🤼": true,
-	"🤼‍♂️": true,
-	"🤼‍♀️": true,
-	"🤽": true,
-	"🤽‍♂️": true,
-	"🤽‍♀️": true,
-	"🤾": true,
-	"🤾‍♂️": true,
-	"🤾‍♀️": true,
-	"🤹": true,
-	"🤹‍♂️": true,
-	"🤹‍♀️": true,
-	"🧘": true,
-	"🧘‍♂️": true,
-	"🧘‍♀️": true,
-	"🛀": true,
-	"🛌": true,
-	"🧑‍🤝‍🧑": true,
-	"👭": true,
-	"👫": true,
-	"👬": true,
-	"💏": true,
-	"👩‍❤️‍💋‍👨": true,
-	"👨‍❤️‍💋‍👨": true,
-	"👩‍❤️‍💋‍👩": true,
-	"💑": true,
-	"👩‍❤️‍👨": true,
-	"👨‍❤️‍👨": true,
-	"👩‍❤️‍👩": true,
-	"👨‍👩‍👦": true,
-	"👨‍👩‍👧": true,
-	"👨‍👩‍👧‍👦": true,
-	"👨‍👩‍👦‍👦": true,
-	"👨‍👩‍👧‍👧": true,
-	"👨‍👨‍👦": true,
-	"👨‍👨‍👧": true,
-	"👨‍👨‍👧‍👦": true,
-	"👨‍👨‍👦‍👦": true,
-	"👨‍👨‍👧‍👧": true,
-	"👩‍👩‍👦": true,
-	"👩‍👩‍👧": true,
-	"👩‍👩‍👧‍👦": true,
-	"👩‍👩‍👦‍👦": true,
-	"👩‍👩‍👧‍👧": true,
-	"👨‍👦": true,
-	"👨‍👦‍👦": true,
-	"👨‍👧": true,
-	"👨‍👧‍👦": true,
-	"👨‍👧‍👧": true,
-	"👩‍👦": true,
-	"👩‍👦‍👦": true,
-	"👩‍👧": true,
-	"👩‍👧‍👦": true,
-	"👩‍👧‍👧": true,
-	"🗣️": true,
-	"👤": true,
-	"👥": true,
-	"🫂": true,
-	"👪": true,
-	"🧑‍🧑‍🧒": true,
-	"🧑‍🧑‍🧒‍🧒": true,
-	"🧑‍🧒": true,
-	"🧑‍🧒‍🧒": true,
-	"👣": true,
-	"🫆": true,
-	"🐵": true,
-	"🐒": true,
-	"🦍": true,
-	"🦧": true,
-	"🐶": true,
-	"🐕": true,
-	"🦮": true,
-	"🐕‍🦺": true,
-	"🐩": true,
-	"🐺": true,
-	"🦊": true,
-	"🦝": true,
-	"🐱": true,
-	"🐈": true,
-	"🐈‍⬛": true,
-	"🦁": true,
-	"🐯": true,
-	"🐅": true,
-	"🐆": true,
-	"🐴": true,
-	"🫎": true,
-	"🫏": true,
-	"🐎": true,
-	"🦄": true,
-	"🦓": true,
-	"🦌": true,
-	"🦬": true,
-	"🐮": true,
-	"🐂": true,
-	"🐃": true,
-	"🐄": true,
-	"🐷": true,
-	"🐖": true,
-	"🐗": true,
-	"🐽": true,
-	"🐏": true,
-	"🐑": true,
-	"🐐": true,
-	"🐪": true,
-	"🐫": true,
-	"🦙": true,
-	"🦒": true,
-	"🐘": true,
-	"🦣": true,
-	"🦏": true,
-	"🦛": true,
-	"🐭": true,
-	"🐁": true,
-	"🐀": true,
-	"🐹": true,
-	"🐰": true,
-	"🐇": true,
-	"🐿️": true,
-	"🦫": true,
-	"🦔": true,
-	"🦇": true,
-	"🐻": true,
-	"🐻‍❄️": true,
-	"🐨": true,
-	"🐼": true,
-	"🦥": true,
-	"🦦": true,
-	"🦨": true,
-	"🦘": true,
-	"🦡": true,
-	"🐾": true,
-	"🦃": true,
-	"🐔": true,
-	"🐓": true,
-	"🐣": true,
-	"🐤": true,
-	"🐥": true,
-	"🐦": true,
-	"🐧": true,
-	"🕊️": true,
-	"🦅": true,
-	"🦆": true,
-	"🦢": true,
-	"🦉": true,
-	"🦤": true,
-	"🪶": true,
-	"🦩": true,
-	"🦚": true,
-	"🦜": true,
-	"🪽": true,
-	"🐦‍⬛": true,
-	"🪿": true,
-	"🐦‍🔥": true,
-	"🐸": true,
-	"🐊": true,
-	"🐢": true,
-	"🦎": true,
-	"🐍": true,
-	"🐲": true,
-	"🐉": true,
-	"🦕": true,
-	"🦖": true,
-	"🐳": true,
-	"🐋": true,
-	"🐬": true,
-	"🦭": true,
-	"🐟": true,
-	"🐠": true,
-	"🐡": true,
-	"🦈": true,
-	"🐙": true,
-	"🐚": true,
-	"🪸": true,
-	"🪼": true,
-	"🦀": true,
-	"🦞": true,
-	"🦐": true,
-	"🦑": true,
-	"🦪": true,
-	"🐌": true,
-	"🦋": true,
-	"🐛": true,
-	"🐜": true,
-	"🐝": true,
-	"🪲": true,
-	"🐞": true,
-	"🦗": true,
-	"🪳": true,
-	"🕷️": true,
-	"🕸️": true,
-	"🦂": true,
-	"🦟": true,
-	"🪰": true,
-	"🪱": true,
-	"🦠": true,
-	"💐": true,
-	"🌸": true,
-	"💮": true,
-	"🪷": true,
-	"🏵️": true,
-	"🌹": true,
-	"🥀": true,
-	"🌺": true,
-	"🌻": true,
-	"🌼": true,
-	"🌷": true,
-	"🪻": true,
-	"🌱": true,
-	"🪴": true,
-	"🌲": true,
-	"🌳": true,
-	"🌴": true,
-	"🌵": true,
-	"🌾": true,
-	"🌿": true,
-	"☘️": true,
-	"🍀": true,
-	"🍁": true,
-	"🍂": true,
-	"🍃": true,
-	"🪹": true,
-	"🪺": true,
-	"🍄": true,
-	"🪾": true,
-	"🍇": true,
-	"🍈": true,
-	"🍉": true,
-	"🍊": true,
-	"🍋": true,
-	"🍋‍🟩": true,
-	"🍌": true,
-	"🍍": true,
-	"🥭": true,
-	"🍎": true,
-	"🍏": true,
-	"🍐": true,
-	"🍑": true,
-	"🍒": true,
-	"🍓": true,
-	"🫐": true,
-	"🥝": true,
-	"🍅": true,
-	"🫒": true,
-	"🥥": true,
-	"🥑": true,
-	"🍆": true,
-	"🥔": true,
-	"🥕": true,
-	"🌽": true,
-	"🌶️": true,
-	"🫑": true,
-	"🥒": true,
-	"🥬": true,
-	"🥦": true,
-	"🧄": true,
-	"🧅": true,
-	"🥜": true,
-	"🫘": true,
-	"🌰": true,
-	"🫚": true,
-	"🫛": true,
-	"🍄‍🟫": true,
-	"🫜": true,
-	"🍞": true,
-	"🥐": true,
-	"🥖": true,
-	"🫓": true,
-	"🥨": true,
-	"🥯": true,
-	"🥞": true,
-	"🧇": true,
-	"🧀": true,
-	"🍖": true,
-	"🍗": true,
-	"🥩": true,
-	"🥓": true,
-	"🍔": true,
-	"🍟": true,
-	"🍕": true,
-	"🌭": true,
-	"🥪": true,
-	"🌮": true,
-	"🌯": true,
-	"🫔": true,
-	"🥙": true,
-	"🧆": true,
-	"🥚": true,
-	"🍳": true,
-	"🥘": true,
-	"🍲": true,
-	"🫕": true,
-	"🥣": true,
-	"🥗": true,
-	"🍿": true,
-	"🧈": true,
-	"🧂": true,
-	"🥫": true,
-	"🍱": true,
-	"🍘": true,
-	"🍙": true,
-	"🍚": true,
-	"🍛": true,
-	"🍜": true,
-	"🍝": true,
-	"🍠": true,
-	"🍢": true,
-	"🍣": true,
-	"🍤": true,
-	"🍥": true,
-	"🥮": true,
-	"🍡": true,
-	"🥟": true,
-	"🥠": true,
-	"🥡": true,
-	"🍦": true,
-	"🍧": true,
-	"🍨": true,
-	"🍩": true,
-	"🍪": true,
-	"🎂": true,
-	"🍰": true,
-	"🧁": true,
-	"🥧": true,
-	"🍫": true,
-	"🍬": true,
-	"🍭": true,
-	"🍮": true,
-	"🍯": true,
-	"🍼": true,
-	"🥛": true,
-	"☕": true,
-	"🫖": true,
-	"🍵": true,
-	"🍶": true,
-	"🍾": true,
-	"🍷": true,
-	"🍸": true,
-	"🍹": true,
-	"🍺": true,
-	"🍻": true,
-	"🥂": true,
-	"🥃": true,
-	"🫗": true,
-	"🥤": true,
-	"🧋": true,
-	"🧃": true,
-	"🧉": true,
-	"🧊": true,
-	"🥢": true,
-	"🍽️": true,
-	"🍴": true,
-	"🥄": true,
-	"🔪": true,
-	"🫙": true,
-	"🏺": true,
-	"🌍": true,
-	"🌎": true,
-	"🌏": true,
-	"🌐": true,
-	"🗺️": true,
-	"🗾": true,
-	"🧭": true,
-	"🏔️": true,
-	"⛰️": true,
-	"🌋": true,
-	"🗻": true,
-	"🏕️": true,
-	"🏖️": true,
-	"🏜️": true,
-	"🏝️": true,
-	"🏞️": true,
-	"🏟️": true,
-	"🏛️": true,
-	"🏗️": true,
-	"🧱": true,
-	"🪨": true,
-	"🪵": true,
-	"🛖": true,
-	"🏘️": true,
-	"🏚️": true,
-	"🏠": true,
-	"🏡": true,
-	"🏢": true,
-	"🏣": true,
-	"🏤": true,
-	"🏥": true,
-	"🏦": true,
-	"🏨": true,
-	"🏩": true,
-	"🏪": true,
-	"🏫": true,
-	"🏬": true,
-	"🏭": true,
-	"🏯": true,
-	"🏰": true,
-	"💒": true,
-	"🗼": true,
-	"🗽": true,
-	"⛪": true,
-	"🕌": true,
-	"🛕": true,
-	"🕍": true,
-	"⛩️": true,
-	"🕋": true,
-	"⛲": true,
-	"⛺": true,
-	"🌁": true,
-	"🌃": true,
-	"🏙️": true,
-	"🌄": true,
-	"🌅": true,
-	"🌆": true,
-	"🌇": true,
-	"🌉": true,
-	"♨️": true,
-	"🎠": true,
-	"🛝": true,
-	"🎡": true,
-	"🎢": true,
-	"💈": true,
-	"🎪": true,
-	"🚂": true,
-	"🚃": true,
-	"🚄": true,
-	"🚅": true,
-	"🚆": true,
-	"🚇": true,
-	"🚈": true,
-	"🚉": true,
-	"🚊": true,
-	"🚝": true,
-	"🚞": true,
-	"🚋": true,
-	"🚌": true,
-	"🚍": true,
-	"🚎": true,
-	"🚐": true,
-	"🚑": true,
-	"🚒": true,
-	"🚓": true,
-	"🚔": true,
-	"🚕": true,
-	"🚖": true,
-	"🚗": true,
-	"🚘": true,
-	"🚙": true,
-	"🛻": true,
-	"🚚": true,
-	"🚛": true,
-	"🚜": true,
-	"🏎️": true,
-	"🏍️": true,
-	"🛵": true,
-	"🦽": true,
-	"🦼": true,
-	"🛺": true,
-	"🚲": true,
-	"🛴": true,
-	"🛹": true,
-	"🛼": true,
-	"🚏": true,
-	"🛣️": true,
-	"🛤️": true,
-	"🛢️": true,
-	"⛽": true,
-	"🛞": true,
-	"🚨": true,
-	"🚥": true,
-	"🚦": true,
-	"🛑": true,
-	"🚧": true,
-	"⚓": true,
-	"🛟": true,
-	"⛵": true,
-	"🛶": true,
-	"🚤": true,
-	"🛳️": true,
-	"⛴️": true,
-	"🛥️": true,
-	"🚢": true,
-	"✈️": true,
-	"🛩️": true,
-	"🛫": true,
-	"🛬": true,
-	"🪂": true,
-	"💺": true,
-	"🚁": true,
-	"🚟": true,
-	"🚠": true,
-	"🚡": true,
-	"🛰️": true,
-	"🚀": true,
-	"🛸": true,
-	"🛎️": true,
-	"🧳": true,
-	"⌛": true,
-	"⏳": true,
-	"⌚": true,
-	"⏰": true,
-	"⏱️": true,
-	"⏲️": true,
-	"🕰️": true,
-	"🕛": true,
-	"🕧": true,
-	"🕐": true,
-	"🕜": true,
-	"🕑": true,
-	"🕝": true,
-	"🕒": true,
-	"🕞": true,
-	"🕓": true,
-	"🕟": true,
-	"🕔": true,
-	"🕠": true,
-	"🕕": true,
-	"🕡": true,
-	"🕖": true,
-	"🕢": true,
-	"🕗": true,
-	"🕣": true,
-	"🕘": true,
-	"🕤": true,
-	"🕙": true,
-	"🕥": true,
-	"🕚": true,
-	"🕦": true,
-	"🌑": true,
-	"🌒": true,
-	"🌓": true,
-	"🌔": true,
-	"🌕": true,
-	"🌖": true,
-	"🌗": true,
-	"🌘": true,
-	"🌙": true,
-	"🌚": true,
-	"🌛": true,
-	"🌜": true,
-	"🌡️": true,
-	"☀️": true,
-	"🌝": true,
-	"🌞": true,
-	"🪐": true,
-	"⭐": true,
-	"🌟": true,
-	"🌠": true,
-	"🌌": true,
-	"☁️": true,
-	"⛅": true,
-	"⛈️": true,
-	"🌤️": true,
-	"🌥️": true,
-	"🌦️": true,
-	"🌧️": true,
-	"🌨️": true,
-	"🌩️": true,
-	"🌪️": true,
-	"🌫️": true,
-	"🌬️": true,
-	"🌀": true,
-	"🌈": true,
-	"🌂": true,
-	"☂️": true,
-	"☔": true,
-	"⛱️": true,
-	"⚡": true,
-	"❄️": true,
-	"☃️": true,
-	"⛄": true,
-	"☄️": true,
-	"🔥": true,
-	"💧": true,
-	"🌊": true,
-	"🎃": true,
-	"🎄": true,
-	"🎆": true,
-	"🎇": true,
-	"🧨": true,
-	"✨": true,
-	"🎈": true,
-	"🎉": true,
-	"🎊": true,
-	"🎋": true,
-	"🎍": true,
-	"🎎": true,
-	"🎏": true,
-	"🎐": true,
-	"🎑": true,
-	"🧧": true,
-	"🎀": true,
-	"🎁": true,
-	"🎗️": true,
-	"🎟️": true,
-	"🎫": true,
-	"🎖️": true,
-	"🏆": true,
-	"🏅": true,
-	"🥇": true,
-	"🥈": true,
-	"🥉": true,
-	"⚽": true,
-	"⚾": true,
-	"🥎": true,
-	"🏀": true,
-	"🏐": true,
-	"🏈": true,
-	"🏉": true,
-	"🎾": true,
-	"🥏": true,
-	"🎳": true,
-	"🏏": true,
-	"🏑": true,
-	"🏒": true,
-	"🥍": true,
-	"🏓": true,
-	"🏸": true,
-	"🥊": true,
-	"🥋": true,
-	"🥅": true,
-	"⛳": true,
-	"⛸️": true,
-	"🎣": true,
-	"🤿": true,
-	"🎽": true,
-	"🎿": true,
-	"🛷": true,
-	"🥌": true,
-	"🎯": true,
-	"🪀": true,
-	"🪁": true,
-	"🔫": true,
-	"🎱": true,
-	"🔮": true,
-	"🪄": true,
-	"🎮": true,
-	"🕹️": true,
-	"🎰": true,
-	"🎲": true,
-	"🧩": true,
-	"🧸": true,
-	"🪅": true,
-	"🪩": true,
-	"🪆": true,
-	"♠️": true,
-	"♥️": true,
-	"♦️": true,
-	"♣️": true,
-	"♟️": true,
-	"🃏": true,
-	"🀄": true,
-	"🎴": true,
-	"🎭": true,
-	"🖼️": true,
-	"🎨": true,
-	"🧵": true,
-	"🪡": true,
-	"🧶": true,
-	"🪢": true,
-	"👓": true,
-	"🕶️": true,
-	"🥽": true,
-	"🥼": true,
-	"🦺": true,
-	"👔": true,
-	"👕": true,
-	"👖": true,
-	"🧣": true,
-	"🧤": true,
-	"🧥": true,
-	"🧦": true,
-	"👗": true,
-	"👘": true,
-	"🥻": true,
-	"🩱": true,
-	"🩲": true,
-	"🩳": true,
-	"👙": true,
-	"👚": true,
-	"🪭": true,
-	"👛": true,
-	"👜": true,
-	"👝": true,
-	"🛍️": true,
-	"🎒": true,
-	"🩴": true,
-	"👞": true,
-	"👟": true,
-	"🥾": true,
-	"🥿": true,
-	"👠": true,
-	"👡": true,
-	"🩰": true,
-	"👢": true,
-	"🪮": true,
-	"👑": true,
-	"👒": true,
-	"🎩": true,
-	"🎓": true,
-	"🧢": true,
-	"🪖": true,
-	"⛑️": true,
-	"📿": true,
-	"💄": true,
-	"💍": true,
-	"💎": true,
-	"🔇": true,
-	"🔈": true,
-	"🔉": true,
-	"🔊": true,
-	"📢": true,
-	"📣": true,
-	"📯": true,
-	"🔔": true,
-	"🔕": true,
-	"🎼": true,
-	"🎵": true,
-	"🎶": true,
-	"🎙️": true,
-	"🎚️": true,
-	"🎛️": true,
-	"🎤": true,
-	"🎧": true,
-	"📻": true,
-	"🎷": true,
-	"🪗": true,
-	"🎸": true,
-	"🎹": true,
-	"🎺": true,
-	"🎻": true,
-	"🪕": true,
-	"🥁": true,
-	"🪘": true,
-	"🪇": true,
-	"🪈": true,
-	"🪉": true,
-	"📱": true,
-	"📲": true,
-	"☎️": true,
-	"📞": true,
-	"📟": true,
-	"📠": true,
-	"🔋": true,
-	"🪫": true,
-	"🔌": true,
-	"💻": true,
-	"🖥️": true,
-	"🖨️": true,
-	"⌨️": true,
-	"🖱️": true,
-	"🖲️": true,
-	"💽": true,
-	"💾": true,
-	"💿": true,
-	"📀": true,
-	"🧮": true,
-	"🎥": true,
-	"🎞️": true,
-	"📽️": true,
-	"🎬": true,
-	"📺": true,
-	"📷": true,
-	"📸": true,
-	"📹": true,
-	"📼": true,
-	"🔍": true,
-	"🔎": true,
-	"🕯️": true,
-	"💡": true,
-	"🔦": true,
-	"🏮": true,
-	"🪔": true,
-	"📔": true,
-	"📕": true,
-	"📖": true,
-	"📗": true,
-	"📘": true,
-	"📙": true,
-	"📚": true,
-	"📓": true,
-	"📒": true,
-	"📃": true,
-	"📜": true,
-	"📄": true,
-	"📰": true,
-	"🗞️": true,
-	"📑": true,
-	"🔖": true,
-	"🏷️": true,
-	"💰": true,
-	"🪙": true,
-	"💴": true,
-	"💵": true,
-	"💶": true,
-	"💷": true,
-	"💸": true,
-	"💳": true,
-	"🧾": true,
-	"💹": true,
-	"✉️": true,
-	"📧": true,
-	"📨": true,
-	"📩": true,
-	"📤": true,
-	"📥": true,
-	"📦": true,
-	"📫": true,
-	"📪": true,
-	"📬": true,
-	"📭": true,
-	"📮": true,
-	"🗳️": true,
-	"✏️": true,
-	"✒️": true,
-	"🖋️": true,
-	"🖊️": true,
-	"🖌️": true,
-	"🖍️": true,
-	"📝": true,
-	"💼": true,
-	"📁": true,
-	"📂": true,
-	"🗂️": true,
-	"📅": true,
-	"📆": true,
-	"🗒️": true,
-	"🗓️": true,
-	"📇": true,
-	"📈": true,
-	"📉": true,
-	"📊": true,
-	"📋": true,
-	"📌": true,
-	"📍": true,
-	"📎": true,
-	"🖇️": true,
-	"📏": true,
-	"📐": true,
-	"✂️": true,
-	"🗃️": true,
-	"🗄️": true,
-	"🗑️": true,
-	"🔒": true,
-	"🔓": true,
-	"🔏": true,
-	"🔐": true,
-	"🔑": true,
-	"🗝️": true,
-	"🔨": true,
-	"🪓": true,
-	"⛏️": true,
-	"⚒️": true,
-	"🛠️": true,
-	"🗡️": true,
-	"⚔️": true,
-	"💣": true,
-	"🪃": true,
-	"🏹": true,
-	"🛡️": true,
-	"🪚": true,
-	"🔧": true,
-	"🪛": true,
-	"🔩": true,
-	"⚙️": true,
-	"🗜️": true,
-	"⚖️": true,
-	"🦯": true,
-	"🔗": true,
-	"⛓️‍💥": true,
-	"⛓️": true,
-	"🪝": true,
-	"🧰": true,
-	"🧲": true,
-	"🪜": true,
-	"🪏": true,
-	"⚗️": true,
-	"🧪": true,
-	"🧫": true,
-	"🧬": true,
-	"🔬": true,
-	"🔭": true,
-	"📡": true,
-	"💉": true,
-	"🩸": true,
-	"💊": true,
-	"🩹": true,
-	"🩼": true,
-	"🩺": true,
-	"🩻": true,
-	"🚪": true,
-	"🛗": true,
-	"🪞": true,
-	"🪟": true,
-	"🛏️": true,
-	"🛋️": true,
-	"🪑": true,
-	"🚽": true,
-	"🪠": true,
-	"🚿": true,
-	"🛁": true,
-	"🪤": true,
-	"🪒": true,
-	"🧴": true,
-	"🧷": true,
-	"🧹": true,
-	"🧺": true,
-	"🧻": true,
-	"🪣": true,
-	"🧼": true,
-	"🫧": true,
-	"🪥": true,
-	"🧽": true,
-	"🧯": true,
-	"🛒": true,
-	"🚬": true,
-	"⚰️": true,
-	"🪦": true,
-	"⚱️": true,
-	"🧿": true,
-	"🪬": true,
-	"🗿": true,
-	"🪧": true,
-	"🪪": true,
-	"🏧": true,
-	"🚮": true,
-	"🚰": true,
-	"♿": true,
-	"🚹": true,
-	"🚺": true,
-	"🚻": true,
-	"🚼": true,
-	"🚾": true,
-	"🛂": true,
-	"🛃": true,
-	"🛄": true,
-	"🛅": true,
-	"⚠️": true,
-	"🚸": true,
-	"⛔": true,
-	"🚫": true,
-	"🚳": true,
-	"🚭": true,
-	"🚯": true,
-	"🚱": true,
-	"🚷": true,
-	"📵": true,
-	"🔞": true,
-	"☢️": true,
-	"☣️": true,
-	"⬆️": true,
-	"↗️": true,
-	"➡️": true,
-	"↘️": true,
-	"⬇️": true,
-	"↙️": true,
-	"⬅️": true,
-	"↖️": true,
-	"↕️": true,
-	"↔️": true,
-	"↩️": true,
-	"↪️": true,
-	"⤴️": true,
-	"⤵️": true,
-	"🔃": true,
-	"🔄": true,
-	"🔙": true,
-	"🔚": true,
-	"🔛": true,
-	"🔜": true,
-	"🔝": true,
-	"🛐": true,
-	"⚛️": true,
-	"🕉️": true,
-	"✡️": true,
-	"☸️": true,
-	"☯️": true,
-	"✝️": true,
-	"☦️": true,
-	"☪️": true,
-	"☮️": true,
-	"🕎": true,
-	"🔯": true,
-	"🪯": true,
-	"♈": true,
-	"♉": true,
-	"♊": true,
-	"♋": true,
-	"♌": true,
-	"♍": true,
-	"♎": true,
-	"♏": true,
-	"♐": true,
-	"♑": true,
-	"♒": true,
-	"♓": true,
-	"⛎": true,
-	"🔀": true,
-	"🔁": true,
-	"🔂": true,
-	"▶️": true,
-	"⏩": true,
-	"⏭️": true,
-	"⏯️": true,
-	"◀️": true,
-	"⏪": true,
-	"⏮️": true,
-	"🔼": true,
-	"⏫": true,
-	"🔽": true,
-	"⏬": true,
-	"⏸️": true,
-	"⏹️": true,
-	"⏺️": true,
-	"⏏️": true,
-	"🎦": true,
-	"🔅": true,
-	"🔆": true,
-	"📶": true,
-	"🛜": true,
-	"📳": true,
-	"📴": true,
-	"♀️": true,
-	"♂️": true,
-	"⚧️": true,
-	"✖️": true,
-	"➕": true,
-	"➖": true,
-	"➗": true,
-	"🟰": true,
-	"♾️": true,
-	"‼️": true,
-	"⁉️": true,
-	"❓": true,
-	"❔": true,
-	"❕": true,
-	"❗": true,
-	"〰️": true,
-	"💱": true,
-	"💲": true,
-	"⚕️": true,
-	"♻️": true,
-	"⚜️": true,
-	"🔱": true,
-	"📛": true,
-	"🔰": true,
-	"⭕": true,
-	"✅": true,
-	"☑️": true,
-	"✔️": true,
-	"❌": true,
-	"❎": true,
-	"➰": true,
-	"➿": true,
-	"〽️": true,
-	"✳️": true,
-	"✴️": true,
-	"❇️": true,
-	"©️": true,
-	"®️": true,
-	"™️": true,
-	"🫟": true,
-	"#️⃣": true,
-	"*️⃣": true,
-	"0️⃣": true,
-	"1️⃣": true,
-	"2️⃣": true,
-	"3️⃣": true,
-	"4️⃣": true,
-	"5️⃣": true,
-	"6️⃣": true,
-	"7️⃣": true,
-	"8️⃣": true,
-	"9️⃣": true,
-	"🔟": true,
-	"🔠": true,
-	"🔡": true,
-	"🔢": true,
-	"🔣": true,
-	"🔤": true,
-	"🅰️": true,
-	"🆎": true,
-	"🅱️": true,
-	"🆑": true,
-	"🆒": true,
-	"🆓": true,
-	"ℹ️": true,
-	"🆔": true,
-	"Ⓜ️": true,
-	"🆕": true,
-	"🆖": true,
-	"🅾️": true,
-	"🆗": true,
-	"🅿️": true,
-	"🆘": true,
-	"🆙": true,
-	"🆚": true,
-	"🈁": true,
-	"🈂️": true,
-	"🈷️": true,
-	"🈶": true,
-	"🈯": true,
-	"🉐": true,
-	"🈹": true,
-	"🈚": true,
-	"🈲": true,
-	"🉑": true,
-	"🈸": true,
-	"🈴": true,
-	"🈳": true,
-	"㊗️": true,
-	"㊙️": true,
-	"🈺": true,
-	"🈵": true,
-	"🔴": true,
-	"🟠": true,
-	"🟡": true,
-	"🟢": true,
-	"🔵": true,
-	"🟣": true,
-	"🟤": true,
-	"⚫": true,
-	"⚪": true,
-	"🟥": true,
-	"🟧": true,
-	"🟨": true,
-	"🟩": true,
-	"🟦": true,
-	"🟪": true,
-	"🟫": true,
-	"⬛": true,
-	"⬜": true,
-	"◼️": true,
-	"◻️": true,
-	"◾": true,
-	"◽": true,
-	"▪️": true,
-	"▫️": true,
-	"🔶": true,
-	"🔷": true,
-	"🔸": true,
-	"🔹": true,
-	"🔺": true,
-	"🔻": true,
-	"💠": true,
-	"🔘": true,
-	"🔳": true,
-	"🔲": true,
-	"🏁": true,
-	"🚩": true,
-	"🎌": true,
-	"🏴": true,
-	"🏳️": true,
-	"🏳️‍🌈": true,
-	"🏳️‍⚧️": true,
-	"🏴‍☠️": true,
-	"🇦🇨": true,
-	"🇦🇩": true,
-	"🇦🇪": true,
-	"🇦🇫": true,
-	"🇦🇬": true,
-	"🇦🇮": true,
-	"🇦🇱": true,
-	"🇦🇲": true,
-	"🇦🇴": true,
-	"🇦🇶": true,
-	"🇦🇷": true,
-	"🇦🇸": true,
-	"🇦🇹": true,
-	"🇦🇺": true,
-	"🇦🇼": true,
-	"🇦🇽": true,
-	"🇦🇿": true,
-	"🇧🇦": true,
-	"🇧🇧": true,
-	"🇧🇩": true,
-	"🇧🇪": true,
-	"🇧🇫": true,
-	"🇧🇬": true,
-	"🇧🇭": true,
-	"🇧🇮": true,
-	"🇧🇯": true,
-	"🇧🇱": true,
-	"🇧🇲": true,
-	"🇧🇳": true,
-	"🇧🇴": true,
-	"🇧🇶": true,
-	"🇧🇷": true,
-	"🇧🇸": true,
-	"🇧🇹": true,
-	"🇧🇻": true,
-	"🇧🇼": true,
-	"🇧🇾": true,
-	"🇧🇿": true,
-	"🇨🇦": true,
-	"🇨🇨": true,
-	"🇨🇩": true,
-	"🇨🇫": true,
-	"🇨🇬": true,
-	"🇨🇭": true,
-	"🇨🇮": true,
-	"🇨🇰": true,
-	"🇨🇱": true,
-	"🇨🇲": true,
-	"🇨🇳": true,
-	"🇨🇴": true,
-	"🇨🇵": true,
-	"🇨🇶": true,
-	"🇨🇷": true,
-	"🇨🇺": true,
-	"🇨🇻": true,
-	"🇨🇼": true,
-	"🇨🇽": true,
-	"🇨🇾": true,
-	"🇨🇿": true,
-	"🇩🇪": true,
-	"🇩🇬": true,
-	"🇩🇯": true,
-	"🇩🇰": true,
-	"🇩🇲": true,
-	"🇩🇴": true,
-	"🇩🇿": true,
-	"🇪🇦": true,
-	"🇪🇨": true,
-	"🇪🇪": true,
-	"🇪🇬": true,
-	"🇪🇭": true,
-	"🇪🇷": true,
-	"🇪🇸": true,
-	"🇪🇹": true,
-	"🇪🇺": true,
-	"🇫🇮": true,
-	"🇫🇯": true,
-	"🇫🇰": true,
-	"🇫🇲": true,
-	"🇫🇴": true,
-	"🇫🇷": true,
-	"🇬🇦": true,
-	"🇬🇧": true,
-	"🇬🇩": true,
-	"🇬🇪": true,
-	"🇬🇫": true,
-	"🇬🇬": true,
-	"🇬🇭": true,
-	"🇬🇮": true,
-	"🇬🇱": true,
-	"🇬🇲": true,
-	"🇬🇳": true,
-	"🇬🇵": true,
-	"🇬🇶": true,
-	"🇬🇷": true,
-	"🇬🇸": true,
-	"🇬🇹": true,
-	"🇬🇺": true,
-	"🇬🇼": true,
-	"🇬🇾": true,
-	"🇭🇰": true,
-	"🇭🇲": true,
-	"🇭🇳": true,
-	"🇭🇷": true,
-	"🇭🇹": true,
-	"🇭🇺": true,
-	"🇮🇨": true,
-	"🇮🇩": true,
-	"🇮🇪": true,
-	"🇮🇱": true,
-	"🇮🇲": true,
-	"🇮🇳": true,
-	"🇮🇴": true,
-	"🇮🇶": true,
-	"🇮🇷": true,
-	"🇮🇸": true,
-	"🇮🇹": true,
-	"🇯🇪": true,
-	"🇯🇲": true,
-	"🇯🇴": true,
-	"🇯🇵": true,
-	"🇰🇪": true,
-	"🇰🇬": true,
-	"🇰🇭": true,
-	"🇰🇮": true,
-	"🇰🇲": true,
-	"🇰🇳": true,
-	"🇰🇵": true,
-	"🇰🇷": true,
-	"🇰🇼": true,
-	"🇰🇾": true,
-	"🇰🇿": true,
-	"🇱🇦": true,
-	"🇱🇧": true,
-	"🇱🇨": true,
-	"🇱🇮": true,
-	"🇱🇰": true,
-	"🇱🇷": true,
-	"🇱🇸": true,
-	"🇱🇹": true,
-	"🇱🇺": true,
-	"🇱🇻": true,
-	"🇱🇾": true,
-	"🇲🇦": true,
-	"🇲🇨": true,
-	"🇲🇩": true,
-	"🇲🇪": true,
-	"🇲🇫": true,
-	"🇲🇬": true,
-	"🇲🇭": true,
-	"🇲🇰": true,
-	"🇲🇱": true,
-	"🇲🇲": true,
-	"🇲🇳": true,
-	"🇲🇴": true,
-	"🇲🇵": true,
-	"🇲🇶": true,
-	"🇲🇷": true,
-	"🇲🇸": true,
-	"🇲🇹": true,
-	"🇲🇺": true,
-	"🇲🇻": true,
-	"🇲🇼": true,
-	"🇲🇽": true,
-	"🇲🇾": true,
-	"🇲🇿": true,
-	"🇳🇦": true,
-	"🇳🇨": true,
-	"🇳🇪": true,
-	"🇳🇫": true,
-	"🇳🇬": true,
-	"🇳🇮": true,
-	"🇳🇱": true,
-	"🇳🇴": true,
-	"🇳🇵": true,
-	"🇳🇷": true,
-	"🇳🇺": true,
-	"🇳🇿": true,
-	"🇴🇲": true,
-	"🇵🇦": true,
-	"🇵🇪": true,
-	"🇵🇫": true,
-	"🇵🇬": true,
-	"🇵🇭": true,
-	"🇵🇰": true,
-	"🇵🇱": true,
-	"🇵🇲": true,
-	"🇵🇳": true,
-	"🇵🇷": true,
-	"🇵🇸": true,
-	"🇵🇹": true,
-	"🇵🇼": true,
-	"🇵🇾": true,
-	"🇶🇦": true,
-	"🇷🇪": true,
-	"🇷🇴": true,
-	"🇷🇸": true,
-	"🇷🇺": true,
-	"🇷🇼": true,
-	"🇸🇦": true,
-	"🇸🇧": true,
-	"🇸🇨": true,
-	"🇸🇩": true,
-	"🇸🇪": true,
-	"🇸🇬": true,
-	"🇸🇭": true,
-	"🇸🇮": true,
-	"🇸🇯": true,
-	"🇸🇰": true,
-	"🇸🇱": true,
-	"🇸🇲": true,
-	"🇸🇳": true,
-	"🇸🇴": true,
-	"🇸🇷": true,
-	"🇸🇸": true,
-	"🇸🇹": true,
-	"🇸🇻": true,
-	"🇸🇽": true,
-	"🇸🇾": true,
-	"🇸🇿": true,
-	"🇹🇦": true,
-	"🇹🇨": true,
-	"🇹🇩": true,
-	"🇹🇫": true,
-	"🇹🇬": true,
-	"🇹🇭": true,
-	"🇹🇯": true,
-	"🇹🇰": true,
-	"🇹🇱": true,
-	"🇹🇲": true,
-	"🇹🇳": true,
-	"🇹🇴": true,
-	"🇹🇷": true,
-	"🇹🇹": true,
-	"🇹🇻": true,
-	"🇹🇼": true,
-	"🇹🇿": true,
-	"🇺🇦": true,
-	"🇺🇬": true,
-	"🇺🇲": true,
-	"🇺🇳": true,
-	"🇺🇸": true,
-	"🇺🇾": true,
-	"🇺🇿": true,
-	"🇻🇦": true,
-	"🇻🇨": true,
-	"🇻🇪": true,
-	"🇻🇬": true,
-	"🇻🇮": true,
-	"🇻🇳": true,
-	"🇻🇺": true,
-	"🇼🇫": true,
-	"🇼🇸": true,
-	"🇽🇰": true,
-	"🇾🇪": true,
-	"🇾🇹": true,
-	"🇿🇦": true,
-	"🇿🇲": true,
-	"🇿🇼": true,
-	"🏴󠁧󠁢󠁥󠁮󠁧󠁿": true,
-	"🏴󠁧󠁢󠁳󠁣󠁴󠁿": true,
-	"🏴󠁧󠁢󠁷󠁬󠁳󠁿": true
-};
+const RFC4648 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-// This is a modified https://github.com/JustStudio7/Encoder.js/blob/main/_just/dangerously-insert-files/encoder.js%401.0.1.js code
+function pad(str) {    
+    const padding = str.length % 4;
 
-const EN = [
-    ' all', ' All', ' ALL', 'all', 'All', 'ALL',
-    ' and', ' And', ' AND', 'and', 'And', 'AND',
-    ' that', ' That', ' THAT', 'that', 'That', 'THAT',
-    ' have', ' Have', ' HAVE', 'have', 'Have', 'HAVE',
-    ' for', ' For', ' FOR', 'for', 'For', 'FOR',
-    ' not', ' Not', ' NOT', 'not', 'Not', 'NOT',
-    ' with', ' With', ' WITH', 'with', 'With', 'WITH',
-    ' be', ' Be', ' BE', ' to', ' To', ' TO',
-    ' of', ' Of', ' OF', ' in', ' In', ' IN',
-    ' it', ' It', ' IT', ' on', ' On', ' ON',
-    ' the', ' The', ' THE', 'the', 'The', 'THE',
-    ' this', ' This', ' THIS', 'this', 'This', 'THIS',
-    ' from', ' From', ' FROM', 'from', 'From', 'FROM',
-    'his', 'His', 'HIS', 'her', 'Her', 'HER',
-    'what', 'What', 'WHAT', 'about', 'About', 'ABOUT',
-    'which', 'Which', 'WHICH', 'when', 'When', 'WHEN',
-    'as', 'AS', 'do', 'DO'
-];
-const RU = [
-    ' не', ' \u041d\u0435', ' \u041d\u0415', ' она', ' Она', ' \u041e\u041d\u0410',
-    ' он', ' Он', ' \u041e\u041d', 'она', 'Она', '\u041e\u041d\u0410',
-    ' на', ' \u041d\u0430', ' \u041d\u0410', ' они', ' Они', ' ОНИ',
-    ' что', ' Что', ' ЧТО', 'что', 'Что', 'ЧТО',
-    ' тот', ' Тот', ' \u0422\u041e\u0422', 'тот', 'Тот', '\u0422\u041e\u0422',
-    ' быть', ' Быть', ' БЫТЬ', 'быть', 'Быть', 'БЫТЬ',
-    ' весь', ' Весь', ' \u0412\u0415\u0421\u042c', 'весь', 'Весь', '\u0412\u0415\u0421\u042c',
-    ' это', ' Это', ' ЭТО', ' это', ' Это', ' ЭТО',
-    ' как', ' Как', ' \u041a\u0410\u041a', 'как', 'Как', '\u041a\u0410\u041a',
-    ' по', ' По', ' ПО', ' но', ' \u041d\u043e', ' \u041d\u041e',
-    ' ты', ' Ты', ' ТЫ', ' из', ' Из', ' ИЗ',
-    ' мы', ' Мы', ' МЫ', ' за', ' \u0417\u0430', ' \u0417\u0410',
-    ' вы', ' Вы', ' ВЫ', ' же', ' Же', ' ЖЕ',
-    ' от', ' От', ' \u041e\u0422', ' бы', ' Бы', ' БЫ',
-    'так', 'Так', '\u0422\u0410\u041a', 'который', 'Который', 'КОТОРЫЙ',
-    'этот', 'Этот', 'ЭТОТ', 'когда', 'Когда', 'КОГДА',
-    'только', 'Только', 'ТОЛЬКО', 'же '
-];
-const FR = [
-    ' tout', ' Tout', ' TOUT', 'tout', 'Tout', 'TOUT',
-    ' et', ' Et', ' ET', 'et', 'Et', 'ET',
-    ' que', ' Que', ' QUE', 'que', 'Que', 'QUE',
-    ' avoir', ' Avoir', ' AVOIR', 'avoir', 'Avoir', 'AVOIR',
-    ' pour', ' Pour', ' POUR', 'pour', 'Pour', 'POUR',
-    ' n\'', ' N\'', ' N\'', 'n\'', 'N\'', 'N\'',
-    ' avec', ' Avec', ' AVEC', 'avec', 'Avec', 'AVEC',
-    ' être', ' Être', ' ÊTRE', ' pour', ' Pour', ' POUR',
-    ' pour', ' Pour', ' POUR', ' dans', ' Dans', ' DANS',
-    ' il', ' Il', ' IL', ' sur', ' Sur', ' SUR',
-    'lequel', 'Lequel', 'LEQUEL', 'le', 'Le', 'LE',
-    ' ceci', ' ceci', ' CECI', 'ceci', 'Ceci', 'CECI',
-    'à la place de', 'A LA PLACE DE', ' DE', 'de', 'De', 'DE',
-    'son', 'Son', 'SON', 'sa', 'Sa', 'SA',
-    'que', 'Que', 'QUE', 'à propos', 'A propos', 'A PROPOS',
-    ' le', ' Le', ' LE', 'quand', 'Quand', 'QUAND',
-    ' de', ' De', 'faire', 'FAIRE'
-];
-const UA = [
-    'так', 'Так', '\u0422\u0410\u041a', ' ні', ' \u041d\u0456', ' \u041d\u0406',
-    'він', 'Він', '\u0412\u0406\u041d', 'вона', 'Вона', '\u0412\u041e\u041d\u0410',
-    'вони', 'Вони', 'ВОНИ', 'дякую', 'Дякую', 'ДЯКУЮ',
-    ' як', ' Як', ' ЯК', 'що', 'Що', 'ЩО',
-    'від', 'Від', 'ВІД', ' це', ' Це', ' ЦЕ',
-    'коли', 'Коли', 'КОЛИ', 'зараз', 'Зараз', '\u0417\u0410\u0420\u0410\u0417',
-    'хочу', 'Хочу', 'ХОЧУ', 'можливо', 'Можливо', 'МОЖЛИВО',
-    ' ти', ' Ти', ' ТИ', ' ми', ' Ми', ' МИ',
-    'але', 'Але', 'АЛЕ', 'який', 'Який', 'ЯКИЙ',
-    'чому', 'Чому', 'ЧОМУ', 'тільки', 'Тільки', 'ТІЛЬКИ',
-    'цей', 'Цей', 'ЦЕЙ', 'друзі', 'Друзі', 'ДРУЗІ',
-    'Їжа', 'Їжа', 'ЇЖА', 'навіщо', 'Навіщо', 'НАВІЩО',
-    'поки що', 'Поки що', 'ПОКИ ЩО', 'вчора', 'Вчора', 'ВЧОРА',
-    'привіт', 'Привіт', 'ПРИВІТ', 'якщо', 'Якщо', 'ЯКЩО',
-    'також', 'Також', 'ТАКОЖ', 'існує', 'Існує', 'ІСНУЄ',
-    'як справи', 'Як справи', 'ЯК СПРАВИ', 'раніше', 'Раніше', 'РАНІШЕ',
-    'зрозуміло', 'Зрозуміло', 'ЗРОЗУМИЛО', 'до побачення'
-];
-const BN = [
-    'আমি', 'তুমি', 'সে', 'আমরা', 'তারা', 'এটা',
-    'কি', 'যে', 'না', 'হ্যাঁ', 'এবং', 'কিন্তু',
-    'যদি', 'কারণ', 'অথবা', 'জন্য', 'সাথে', 'থেকে',
-    'মধ্যে', 'পর্যন্ত','উপর', 'নিচে', 'কাছে', 'দূরে',
-    'বড়', 'ছোট', 'ভালো', 'খারাপ', 'নতুন', 'পুরানো',
-    'জল', 'আগুন', 'মাটি', 'বাতাস', 'আকাশ', 'সূর্য',
-    'চাঁদ', 'দিন', 'রাত', 'বছর', 'সময়', 'মানুষ',
-    'লোক', 'বাড়ি', 'রাস্তা', 'দেশ', 'শহর', 'কাজ',
-    'খাবার', 'কাপড়', 'বই', 'লেখা', 'পড়া', 'দেখা',
-    'শোনা', 'কথা', 'জানা', 'বোঝা', 'করা', 'যাওয়া',
-    'আসা', 'দেওয়া', 'নেওয়া', 'রাখা', 'খোঁজা', 'পাওয়া',
-    'হওয়া', 'থাকা', 'চাওয়া', 'পার', 'হতে', 'হয়ে',
-    'হয়েছিল', 'করতে', 'বলতে', 'দেখতে', 'শুনতে', 'জানতে',
-    'বুঝতে', 'যেতে', 'আসতে', 'দিতে', 'নিতে', 'রাখতে',
-    'খুঁজতে', 'পেতে', 'চাই', 'পারি', 'হবে', 'করব',
-    'বলব', 'দেখব', 'শুনব', 'জানব', 'বুঝব', 'যাব',
-    'আসবে', 'দেব', 'নেব', 'রাখব'
-];
+    if (padding === 2) {
+        str += '==';
+    } else if (padding === 3) {
+        str += '=';
+    }
 
-const emoji = Object.keys(emojiObject);
-
-function d835(char) {
-    return '\ud835'+char;
+    return str;
 }
-function d834(char) {
-    return '\ud834'+char;
+function unpad(str) {
+    return str.replace(/=+$/, '');
 }
-const dict = [
-    'th', 'he', 'in', 'er', 'an', 're', 'on', 'at', 'nd', 'ing', 'un', 'ab', 'ir',
-    'Th', 'He', 'In', 'Er', 'An', 'Re', 'On', 'At', 'Nd', 'Ing', 'Un', 'Ab', 'Ir',
-    'TH', 'HE', 'IN', 'ER', 'AN', 'RE', 'ON', 'AT', 'ND', 'ING', 'UN', 'AB', 'IR',
 
-    ' a ', ' you ', ' we ', ' they ', ' i ', ' is ', ' are ', ' was ', ' were ', ' to ', ' in ', ' on ', ' at ', ' and ', ' or ', ' but ',
-    ' A ', ' You ', ' We ', ' They ', ' I ', ' Is ', ' Are ', ' Was ', ' Were ', ' To ', ' In ', ' On ', ' At ', ' And ', ' Or ', ' But ',
-    ' A' , ' YOU ', ' WE ', ' THEY ', ' I',  ' IS ', ' ARE ', ' WAS ', ' WERE ', ' TO ', ' IN ', ' ON ', ' AT ', ' AND ', ' OR ', ' BUT ',
-
-    ' he ', ' she ', ' it ', ' his ', ' her ', ' its ', ' am ', ' do ', ' cause ', ' because ', ' like ', ' fortunately ', ' unfortunately ',
-    ' He ', ' She ', ' It ', ' His ', ' Her ', ' Its ', ' Am ', ' Do ', ' Cause ', ' Because ', ' Like ', ' Fortunately ', ' Unfortunately ',
-    ' HE ', ' SHE ', ' IT ', ' HIS ', ' HER ', ' ITS ', ' AM ', ' DO ', ' CAUSE ', ' BECAUSE ', ' LIKE ', ' FORTUNATELY ', ' UNFORTUNATELY ',
-
-    'hi', 'wsg', 'hru', 'wdym', 'idk', 'imo', 'jk', 'tbh', 'ig', 'wow', 'lol', 'ez', 'gg',
-
-    'ст', 'но', 'то', 'на', 'ен', 'ов', 'ни', 'пре', 'при', 'ри', 'ть', 'рю', 'шь', 'за', 'от', 'под', 'да', 'не', 'из',
-    'Ст', '\u041d\u043e', '\u0422\u043e', '\u041d\u0430', 'Ен', 'Ов', 'Ни', 'Пре', 'При', 'Ри', 'Ть', 'Рю', 'Шь', '\u0417\u0430', 
-    'От', 'Под', 'Да', '\u041d\u0435', 'Из',
-    '\u0421\u0422', '\u041d\u041e', '\u0422\u041e', '\u041d\u0410', '\u0415\u041d', '\u041e\u0412', 'НИ', 'ПРЕ', 'ПРИ', 'РИ', '\u0422\u042c', 
-    'РЮ', 'ШЬ', '\u0417\u0410', '\u041e\u0422', 'ПОД', 'ДА', '\u041d\u0415', 'ИЗ',
-
-    'прив', 'крч', 'крут', 'хз', 'кд', 'ку', 'пон', 'ок', 'всм', 'щас', 'лол', 'изи', '\u0433'.repeat(2),
-
-    ' '.repeat(2), ' '.repeat(3), '!'.repeat(2), '?'.repeat(2), '.'.repeat(3), '-'.repeat(3), '='.repeat(2), '+'.repeat(2),
-    '\n\n', '\r\n', ' \n', '\n ',
-
-    'const', 'let', 'var', 'import', 'from', 'with', 'export', 'class', 'public', 'private',
-    'static', 'function', 'end', 'if', 'else', 'elseif', 'elif', 'try', 'catch', 'new',
-    'for', 'typeof', 'type', 'of', 'return', 'switch', 'case', 'esac', 'finally', 'fi',
-    '/*', '*/', '--', 'while', 'do', 'true', 'false', 'null', 'nil', 'nullptr', 'throw',
-
-    '://', 'https', 'data', 'sms', 'mms', 'tel', 'file', 'mailto', 'http', 'ftp', 'wss', 'websocket', 'docs.',
-    'www.', 'www', '.com', '.org', '.dev', 'tld', 'subdomain', 'domain', 'website', 'site', 'web', 'email', 'mail',
-    'GET', 'HEAD', 'PUT', 'PATCH', 'DELETE', 'com', 'org', 'dev', 'xhr', 'fetch',
-
-    '//#', '//', '/>', '()', '{}', '[]', '<>',
-
-    ...(()=>{
-        const out = [];
-        for (let i = 0xDC00; i < 0xDC9B + 1; i++) {
-            if (i != 0xDC55) out.push(d835(String.fromCharCode(i)));
-        }
-        return out;
-    })(),
-    ...(()=>{
-        const out = [];
-        for (let i = 0xDD38; i < 0xDD6B + 1; i++) {
-            if (
-                i != 0xDD3A && i != 0xDD3F && i != 0xDD45 &&
-                i != 0xDD47 && i != 0xDD48 && i != 0xDD49 && 
-                i != 0xDD51
-            ) out.push(d835(String.fromCharCode(i)));
-        }
-        return out;
-    })(),
-    ...(()=>{
-        const out = [];
-        for (let i = 0xDEA8; i < 0xDEE1 + 1; i++) {
-            out.push(d835(String.fromCharCode(i)));
-        }
-        return out;
-    })(),
+function convertB64(str, chars, toStandard = false) {
+    const source = toStandard ? chars : RFC4648;
+    const target = toStandard ? RFC4648 : chars;
     
-    ...(()=>{
-        const out = [];
-        for (let i = 0xDD00; i < 0xDD26 + 1; i++) {
-            out.push(d834(String.fromCharCode(i)));
+    let out = [];
+    for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+        if (char === '=') {
+            out.push('=');
+            continue;
         }
-        return out;
-    })(),
-];
-const seq = [
-    ...emoji,
-    ...EN,
-    ...RU,
-    ...FR,
-    ...UA,
-    ...BN,
-    ...dict    
-];
-const seqOffset = 0x10001;
-function buildTrie(sequences) {
-    const root = Object.create(null);
-
-    for (let index = 0; index < sequences.length; index++) {
-        const str = sequences[index];
-        let node = root;
-
-        for (let i = 0; i < str.length; i++) {
-            const code = str.charCodeAt(i);
-            node = node[code] ??= Object.create(null);
-        }
-
-        node.$ = index;
+        const index = source.indexOf(char);
+        out.push(index !== -1 ? target[index] : char);
     }
-
-    return root;
-}
-const seqTrie = buildTrie(seq);
-
-function stringChunks(str, num) {
-    const output = [];
-    for (let i = 0; i < str.length; i += num) {
-        output.push(str.slice(i, i + num));
-    }
-    return output
+    return out.join('');
 }
 
-function check(s, b, bc) {
-    const prefix = 'JSSC: UTF-16-to-any-Base: ';
-    
-    if (typeof s != 'string')   throw new Error(prefix+'Input UTF-16 string ("str" / argument 0) should be a string.');
-    if (typeof b != 'number')   throw new Error(prefix+'Input Base number ("base" / argument 1) should be a number.');
-    if (typeof bc!= 'string')   throw new Error(prefix+'Input Base characters string ("baseChars" / argument 2) should be a string.');
-    if (b < 2)                  throw new Error(prefix+'Base ' + b + ' does not exist.');
-    if (b > bc.length)          throw new Error(prefix+'Cannot use a higher base than the length of the provided base characters string.');
-}
-
-const MAX_BASE41 = 41 ** 3;
-const RLE_OFFSET = seqOffset + seq.length;
-const RLE_MAX = MAX_BASE41 - RLE_OFFSET;
-function RLE(arr) {
-    const result = [];
-    let i = 0;
-
-    while (i < arr.length) {
-        const current = arr[i];
-        let j = i + 1;
-
-        while (j < arr.length && arr[j] === current) j++;
-
-        let count = j - i;
-
-        result.push(current);
-
-        if (count >= 3 && current !== '000') {
-            let remaining = count - 1;
-
-            while (remaining > 0) {
-
-                if (remaining === 2) {
-                    result.push('000');
-                    remaining -= 2;
-                    continue;
-                }
-
-                let bestBlock = 0;
-                let bestCode = -1;
-
-                for (let r = 0; r < RLE_MAX; r++) {
-                    let size;
-
-                    if (r < 18) {
-                        size = 2 ** (r + 1);
-                    } else {
-                        size = 2 * (r + 1);
-                    }
-
-                    if (size <= remaining && size > bestBlock) {
-                        bestBlock = size;
-                        bestCode = r;
-                    }
-                }
-
-                if (bestBlock > 0) {
-                    const packed = RLE_OFFSET + bestCode;
-                    result.push(
-                        convertBase(packed.toString(10), 10, 41).padStart(3, '0')
-                    );
-                    remaining -= bestBlock;
-                } else {
-                    result.push(current);
-                    remaining--;
-                }
-            }
-
-        } else {
-            for (let k = 1; k < count; k++) {
-                result.push(current);
-            }
-        }
-
-        i = j;
-    }
-
-    return result;
+function random() {
+    const index = Math.floor(Math.random() * 62) + 1;
+    return RFC4648[index];
 }
 
 /**
@@ -3182,45 +1006,34 @@ function RLE(arr) {
  * @param {string} str - UTF-16 string
  * @param {number?} base - Base number (`optional`) (`64` by default)
  * @param {string?} baseChars - Base characters string (`optional`) (supports up to Base64 by default)
+ * @param {number?} setData - Set encoded integer (1-63) (`optional`)
  * @returns {string} Encoded string
  */
-function encode(str, base = 64, baseChars = B64) {
-    check(str, base, baseChars);
+function encode(str, base = 64, baseChars = B64, setData = 0) {
+    let bytes = [];
 
-    const output = [];
-
-    for (let i = 0; i < str.length;) {
-
-        let node = seqTrie;
-        let j = i;
-        let lastMatch = -1;
-        let lastIndex = -1;
-
-        while (j < str.length) {
-            const code = str.charCodeAt(j);
-            node = node[code];
-            if (!node) break;
-
-            if (node.$ !== undefined) {
-                lastMatch = j;
-                lastIndex = node.$;
-            }
-
-            j++;
-        }
-
-        if (lastMatch !== -1) {
-            const packed = seqOffset + lastIndex;
-            output.push(convertBase(packed.toString(10), 10, 41).padStart(3, '0'));
-            i = lastMatch + 1;
-        } else {
-            const packed = str.charCodeAt(i) + 1;
-            output.push(convertBase(packed.toString(10), 10, 41).padStart(3, '0'));
-            i++;
-        }
+    for (let i = 0; i < str.length; i++) {
+        const code = str.charCodeAt(i);
+        bytes.push(code >> 8);
+        bytes.push(code & 0xFF);
     }
 
-    return convertBase(RLE(output).join(''), 41, base);
+    const b64 = pad((
+        setData > 0 && setData < 64 ? RFC4648[setData] : base == 64 ? '' : random()
+    ) + unpad(btoa(String.fromCharCode(...bytes))));
+    if (base == 64) {
+        if (baseChars != RFC4648) return convertB64(b64, baseChars);
+        return b64;
+    } else return pad(convertBase(unpad(b64), 64, base, baseChars));
+}
+
+function parseEncoded(str, base, getData) {
+    const hasData = base != 64 || getData;
+    if (hasData) return [
+        str.slice(1), str.slice(0,1)
+    ]; else return [
+        str, null
+    ];
 }
 
 /**
@@ -3229,48 +1042,28 @@ function encode(str, base = 64, baseChars = B64) {
  * @param {string} str - Encoded string
  * @param {number?} base - Base number (`optional`) (`64` by default)
  * @param {string?} baseChars - Base characters string (`optional`) (supports up to Base64 by default)
- * @returns {string} UTF-16 string
+ * @param {boolean?} getData - Get encoded integer (1-63), returns an array `[string, number]` (`optional`) (`false` by default)
+ * @returns {string|[string,number]} UTF-16 string
  */
-function decode(str, base = 64, baseChars = B64) {
-    check(str, base, baseChars);
-
-    let base41 = convertBase(str, base, 41);
-    let output = '';
-
-    const d3 = base41.length % 3;
-    if (d3 == 1) base41 = '00' + base41;
-    if (d3 == 2) base41 = '0' + base41;
-
-    let last = '';
-    for (const chunk of stringChunks(base41, 3)) {
-        const value = parseInt(convertBase(chunk, 41, 10), 10);
-
-        let back = [false, last];
-        if (value == 0) {
-            last = last.repeat(2);
-            back[0] = true;
-        } else if (value >= seq.length + seqOffset) {
-            const val = value - seq.length - seqOffset;
-            if (val < 18) {
-                last = last.repeat(2 ** (val + 1));
-            } else {
-                last = last.repeat(2 * (val + 1));
-            }
-            back[0] = true;
-        } else if (value >= seqOffset) {
-            const index = value - seqOffset;
-            last = seq[index];
-        } else {
-            last = String.fromCharCode(value - 1);
-        }
-        output += last;
-
-        if (back[0]) {
-            last = back[1];
-        }
+function decode(str, base = 64, baseChars = B64, getData = false) {
+    let [b64, data] = parseEncoded(str, base, getData);
+    if (base != 64) {
+        const input = pad(convertBase(unpad(str), base, 64, baseChars));
+        [b64, data] = parseEncoded(input, base, getData);
+    } else if (baseChars != RFC4648) {
+        const input = convertB64(str, baseChars, true);
+        [b64, data] = parseEncoded(input, base, getData);
     }
 
-    return output;
+    const bytes = atob(b64);
+    let out = '';
+
+    for (let i = 0; i < bytes.length; i += 2) {
+        const code = (bytes.charCodeAt(i) << 8) | bytes.charCodeAt(i + 1);
+        out += String.fromCharCode(code);
+    }
+
+    return getData ? [out, RFC4648.indexOf(data)] : out;
 }
 
 function getDefaultExportFromCjs (x) {
@@ -4245,7 +2038,7 @@ function B64toUI8A(B64) {
         if (bin != null) bin6.push(bin.padStart(6, '0'));
     }
     
-    const bin8 = stringChunks$1(bin6.join(''), 8);
+    const bin8 = stringChunks(bin6.join(''), 8);
     const int8 = [add];
     for (let i = 0; i < bin8.length; i++) {
         int8.push(parseInt(bin8[i], 2));
@@ -4261,7 +2054,7 @@ function UI8AtoB64(UI8A) {
         bin8.push(UI8A[i].toString(2).padStart(8, '0'));
     }
 
-    const bin6 = stringChunks$1(bin8.join(''), 6);
+    const bin6 = stringChunks(bin8.join(''), 6);
     const B64 = [];
     for (let i = 0; i < bin6.length; i++) {
         B64.push(convertBase$1(bin6[i], 2, 64));
@@ -4278,6 +2071,9 @@ const { eUTF8 } = (()=>{
     const { compressToUTF16, decompressFromUTF16 } = lz;
     return { cLZ: compressToUTF16, dLZ: decompressFromUTF16 };
 })();
+
+let JSSCInstanceID = 0n;
+const JSSCInstances = {};
 
 function cryptCharCode(
     code, get = false,
@@ -4388,6 +2184,9 @@ function readOptions(options, defaults) {
         if ((key == 'depth' || key.toLowerCase() == 'depthlimit' || key == 'worker' || key.toLowerCase() == 'workerlimit') && typeof value == 'number') {
             defaults[key.toLowerCase()] = value;
             continue;
+        } if (key == 'instance' && typeof value == 'string') {
+            defaults[key] = value;
+            continue;
         }
         if (typeof value == 'undefined') continue;
         if (typeof value != 'boolean') throw new Error(prefix+'Invalid options input.');
@@ -4428,7 +2227,7 @@ function getModeID(code1, code2) {
             return code1;
     }
 }
-class JSSC {
+class JSSCDebug {
     constructor (com, dec, opts, m = 0, workers = false) {
         const headerchar = decToBin(com.charCodeAt(0), 16);
         const code1 = headerchar.slice(11);
@@ -4549,8 +2348,40 @@ async function compress(input, options) {
         debug: false,
 
         depth: 0,
-        worker: 0
+        worker: 0,
+
+        instance: undefined,
     };
+    
+    let progressAll = 0;
+    let progressModes = 0;
+    let progressMisc = 0;
+    let progressLast = 0;
+    const candidates = [
+        IIE,
+        DIP,
+        B64IE,
+        TDCCC,
+        TBCCC,
+        CE,
+        AE,
+        FM,
+        URL_,
+        S,
+        SR,
+        EP,
+        B64P,
+        OE,
+        LZS,
+        AXOR
+    ];
+    let done = candidates.length + 2;
+    function onProgress() {
+        if (typeof opts.instance != 'undefined' && progressAll != progressLast) {
+            progressLast = progressAll;
+            JSSCInstances[opts.instance].events['onCompressProgress'](Math.floor(progressAll / done * 100));
+        }
+    }
 
     /* Read options */
     if (options) opts = readOptions(options, opts);
@@ -4644,6 +2475,7 @@ async function compress(input, options) {
         code3 = 3;
         }} catch (_) {
     }}
+    progressMisc++; progressAll++; onProgress();
 
     if (!/\d/.test(str)) {
         str = repeatChars(str);
@@ -4672,12 +2504,19 @@ async function compress(input, options) {
     }
 
     const safeTry = async (fn) => {
+        let result = null;
         try {
-            return await fn();
+            result = await fn();
         } catch (err) {
             if (opts.debug) console.warn(err);
-            return null;
+            result = null;
         }
+        if (typeof opts.instance != 'undefined' && result) {
+            const modeID = (new JSSCDebug(result, input, opts, 0, false)).output.mode;
+            JSSCInstances[opts.instance].events['onCompressionMode'](modeID, input, result);
+            progressAll++; progressModes++; onProgress();
+        }
+        return result;
     };
 
     const validate = async (compressed) => {
@@ -4693,26 +2532,8 @@ async function compress(input, options) {
     const context = {
         opts,
         str, isNum, code3, originalInput,
-        beginId, repeatBefore
+        beginId, repeatBefore,
     };
-    const candidates = [
-        IIE,
-        DIP,
-        B64IE,
-        TDCCC,
-        TBCCC,
-        CE,
-        AE,
-        FM,
-        URL_,
-        S,
-        SR,
-        EP,
-        B64P,
-        OE,
-        LZS,
-        AXOR
-    ];
     async function noWorkers() {
         return await Promise.all(candidates.map(fn => safeTry(async () => await fn(context))));
     }
@@ -4741,6 +2562,9 @@ async function compress(input, options) {
         usedWorkers = false;
     }
 
+    if (progressModes != candidates.length) progressAll = progressMisc + candidates.length;
+    onProgress();
+
     results = results.filter(r => typeof r === 'string' && r.length <= String(originalInput).length);
 
     let best;
@@ -4767,7 +2591,11 @@ async function compress(input, options) {
         if (await validateOffsetEncoding(res, best, enc[2])) best = res;
     }
 
-    if (opts.debug) return new JSSC(best, originalInput, opts, 0, usedWorkers);
+    progressAll++; progressMisc++; onProgress();
+
+    if (typeof opts.instance != 'undefined') JSSCInstances[opts.instance].events['onCompressed'](input, best);
+
+    if (opts.debug) return new JSSCDebug(best, originalInput, opts, 0, usedWorkers);
 
     return best;
 }
@@ -4789,7 +2617,7 @@ function characterEncodings(id, realstr) {
                 return String(characterEncoding[String(binToDec(charr))]);
             }
             if (binCode0.length > 8) {
-                const [character1, character2] = stringChunks$1(decToBin(characterCode, 16), 8);
+                const [character1, character2] = stringChunks(decToBin(characterCode, 16), 8);
                 output.push(binCodeToChar(character1) + binCodeToChar(character2));
             } else {
                 const character = decToBin(characterCode, 8);
@@ -4824,7 +2652,9 @@ async function decompress(str, stringify = false) {
     let opts = {
         stringify: false,
 
-        debug: false
+        debug: false,
+
+        instance: undefined,
     };
 
     /* Read options */
@@ -4872,7 +2702,8 @@ async function decompress(str, stringify = false) {
     }
     
     function checkOutput(out) {
-        if (opts.debug) return new JSSC(s, out, opts, 1);
+        if (typeof opts.instance != 'undefined') JSSCInstances[opts.instance].events['onDecompressed'](str, out);
+        if (opts.debug) return new JSSCDebug(s, out, opts, 1);
         return out;
     }
     async function processOutput(out, checkOut = true) {
@@ -4908,7 +2739,7 @@ async function decompress(str, stringify = false) {
                 const char = realstr.charCodeAt(i);
                 const charcde = String(char);
                 if (charcde.length > 2) {
-                    const charcds = stringChunks$1(charcde, 2);
+                    const charcds = stringChunks(charcde, 2);
                     for (const chrcode of charcds) {
                         addChar(parseInt(chrcode));
                     }
@@ -4926,7 +2757,7 @@ async function decompress(str, stringify = false) {
                 const binCode = decToBin(char, 16);
                 const binCode0 = decToBin(char, 0);
                 if (binCode0.length > 8) {
-                    const [bin1, bin2] = stringChunks$1(binCode, 8);
+                    const [bin1, bin2] = stringChunks(binCode, 8);
                     output.push(toChar(bin1) + toChar(bin2));
                 } else {
                     const binCode8 = decToBin(char, 8);
@@ -4937,7 +2768,7 @@ async function decompress(str, stringify = false) {
         case 3: /* Decimal Integer Packing */
             for (let i = 0; i < realstr.length; i++) {
                 const char = realstr.charCodeAt(i);
-                const binCodes = stringChunks$1(decToBin(char, 16), 4);
+                const binCodes = stringChunks(decToBin(char, 16), 4);
                 for (const binCode of binCodes) {
                     const numm = binToDec(binCode);
                     if (numm != 15) {
@@ -4952,7 +2783,7 @@ async function decompress(str, stringify = false) {
                 chars.push(realstr[i]);
             }
             for (let i = 0; i < realstr.slice(strcodes.code2).length; i++) {
-                const binCodes = stringChunks$1(decToBin(realstr.charCodeAt(i), 16), 4);
+                const binCodes = stringChunks(decToBin(realstr.charCodeAt(i), 16), 4);
                 for (const binCode of binCodes) {
                     if (binCode != '1111') {
                         const numm = binToDec(binCode);
@@ -5072,9 +2903,11 @@ async function decompress(str, stringify = false) {
                 case 3: { /* Chunkification */
                     let i = 0;
                     while (i < realstr.length) {
-                        const length = realstr.charCodeAt(i) + i;
+                        const len = realstr.charCodeAt(i);
                         i++;
-                        output.push(await decompress(realstr.slice(i, length)));
+                        const chunk = realstr.slice(i, i + len);
+                        output.push(await decompress(chunk));
+                        i += len;
                     }
                     return checkOutput(output.join(''));
                 }
@@ -5114,13 +2947,13 @@ async function decompress(str, stringify = false) {
 }
 
 function noDebugMode(result) {
-    if (result instanceof JSSC) throw new Error(prefix+'Invalid options input.');
+    if (result instanceof JSSCDebug) throw new Error(prefix+'Invalid options input.');
     return result;
 }
 
 async function compressToBase64(...input) {
     const compressed = noDebugMode(await compress(...input));
-    return B64Padding(encode(compressed));
+    return encode(compressed);
 }
 async function decompressFromBase64(base64, ...params) {
     return noDebugMode(await decompress(decode(base64.replace(/=+$/, '')), ...params));
@@ -5146,7 +2979,7 @@ async function compressLarge(input, ...params) {
     const LENGTH = 1024;
     if (input.length < LENGTH || typeof input != 'string') return await compress(input, ...params);
 
-    const result = [charCode(cryptCharCode(11, false, false, false, undefined, undefined, false, 3))];
+    const result = [charCode(cryptCharCode(11, false, false, false, -1, 3, false))];
     
     for (let i = 0; i < input.length; i += LENGTH) {
         const chunk = input.slice(i, i + LENGTH);
@@ -5158,7 +2991,7 @@ async function compressLarge(input, ...params) {
 }
 async function compressLargeToBase64(...input) {
     const compressed = await compressLarge(...input);
-    return B64Padding(encode(compressed));
+    return encode(compressed);
 }
 async function compressLargeToBase64URL(...input) {
     const compressed = await compressLarge(...input);
@@ -5262,7 +3095,7 @@ async function DIP(context) {
     }    let [output, RLE, sequences] = [[], false, false];
     function binPadStart(bin) {
         if (bin.length < 16) {
-            const numm = 4 - stringChunks$1(bin, 4).length;
+            const numm = 4 - stringChunks(bin, 4).length;
             return decToBin(15, 4).repeat(numm)+bin;
         } else return bin;
     }
@@ -5354,7 +3187,7 @@ async function TBCCC(context) {
     if (strdata.maxCharCode >= 256) return null;
 
     let [out, repeatAfter, seq] = [[], false, false];
-    for (const pair of stringChunks$1(str, 2)) {
+    for (const pair of stringChunks(str, 2)) {
         const bin = [];
         for (const c of pair) bin.push(decToBin(c.charCodeAt(0), 8));
         out.push(String.fromCharCode(binToDec(bin.join(''))));
@@ -5573,7 +3406,8 @@ async function S(context) {
         const segOpts = {
             ...opts,
             segmentation: false,
-            depth: opts.depth + 1
+            depth: opts.depth + 1,
+            instance: undefined
         };
         const compressed = await compress(seg, segOpts);
 
@@ -5660,7 +3494,7 @@ async function EP(context) {
     }
 
     const out = [];
-    for (const chunk of stringChunks$1(bits.join(''), 16)) {
+    for (const chunk of stringChunks(bits.join(''), 16)) {
         out.push(String.fromCharCode(binToDec(chunk.padEnd(16,'0'))));
     }
 
@@ -5710,7 +3544,8 @@ async function OE(context) {
     const res = enc[1] + await compress(enc[0], {
         ...opts,
         offsetencoding: false,
-        depth: opts.depth + 1
+        depth: opts.depth + 1,
+        instance: undefined
     });
     if (await validateOffsetEncoding(res, originalInput, enc[2])) return res;
     return null;
@@ -5752,13 +3587,82 @@ function setWorkerURL(url) {
                 }
             })()
         )
-    ) throw new Error(prefix+'invalid URL.');
+    ) throw new Error(prefix+'Invalid URL.');
     customWorkerURL = url;
 }
 function getWorkerURL() {
     if (typeof customWorkerURL == 'string' || typeof customWorkerURL == 'object') return customWorkerURL;
     return workerURL;
 }
+
+/* JSSC Instance */
+
+function JSSCFunctions(id, ...functions) {
+    const output = [];
+    for (let i = 0; i < functions.length; i++) {
+        output.push(async (input, options, ...args) => {
+            let opts = options || {};
+            if (typeof options == 'boolean') opts = {stringify: options};
+            opts.instance = id;
+            return await functions[i](input, opts, ...args);
+        });
+    }
+    return output;
+}
+const JSSC = class JSSC {
+    #events;
+    constructor(cloneInstanceID) {
+        const ID = convertBase$1((JSSCInstanceID++).toString(10), 10, 64);
+        this.ID = ID;
+        const isClone = typeof cloneInstanceID == 'string' && cloneInstanceID in JSSCInstances;
+        const parent = JSSCInstances[cloneInstanceID];
+        this.#events = isClone ? parent.events : {
+            onCompressed: (input, output) => {},
+            onCompressProgress: (percentage) => {},
+            onCompressionMode: (modeID, input, output) => {},
+            onDecompressed: (input, output) => {},
+        };
+        const events = this.#events;
+        function set(name, func) {
+            if (typeof func != 'function') throw new Error(prefix+'Invalid event listener.');
+            events[name] = func;
+            JSSCInstances[ID].events = events;
+        }
+        this.events = {
+            get['onCompressed'] () {return events.onCompressed},
+            get['onCompressProgress'] () {return events.onCompressProgress},
+            get['onCompressionMode'] () {return events.onCompressionMode},
+            get['onDecompressed'] () {return events.onDecompressed},
+            set['onCompressed'] (func) {set('onCompressed', func);},
+            set['onCompressProgress'] (func) {set('onCompressProgress', func);},
+            set['onCompressionMode'] (func) {set('onCompressionMode', func);},
+            set['onDecompressed'] (func) {set('onDecompressed', func);},
+        };
+        JSSCInstances[this.ID] = this;
+        [
+            this.compress, this.decompress,
+            this.compressToBase64, this.decompressFromBase64,
+            this.compressToBase64URL, this.decompressFromBase64URL,
+            this.compressToUint8Array, this.decompressFromUint8Array,
+            this.compressLarge, this.compressLargeToBase64, this.compressLargeToBase64URL, this.compressLargeToUint8Array
+        ] = JSSCFunctions(this.ID,
+            compress, decompress,
+            compressToBase64, decompressFromBase64,
+            compressToBase64URL, decompressFromBase64URL,
+            compressToUint8Array, decompressFromUint8Array,
+            compressLarge, compressLargeToBase64, compressLargeToBase64URL, compressLargeToUint8Array
+        );
+        this.clone = () => {
+            return new JSSC(this.ID);
+        };
+        this.delete = () => {
+            delete JSSCInstances[this.ID];
+            for (const [key] of Object.keys(this)) {
+                delete this[key];
+            }
+        };
+    }
+};
 
 if ((String.fromCharCode(65536).charCodeAt(0) === 65536) || !(String.fromCharCode(256).charCodeAt(0) === 256)) {
     throw new Error(prefix+'Supported UTF-16 only!')
@@ -5789,4 +3693,4 @@ const worker = {
     }
 };
 
-export { cache, compress, compressLarge, compressLargeToBase64, compressLargeToBase64URL, compressLargeToUint8Array, compressToBase64, compressToBase64URL, compressToUint8Array, decompress, decompressFromBase64, decompressFromBase64URL, decompressFromUint8Array, version, worker };
+export { JSSC, cache, compress, compressLarge, compressLargeToBase64, compressLargeToBase64URL, compressLargeToUint8Array, compressToBase64, compressToBase64URL, compressToUint8Array, decompress, decompressFromBase64, decompressFromBase64URL, decompressFromUint8Array, version, worker };
