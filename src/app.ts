@@ -6,6 +6,9 @@ declare global {
         JSSC: {
             compress(input: any, options?: any): Promise<string>;
             decompress(input: any): Promise<any>;
+            worker: {
+                url: string;
+            }
         };
         monaco: any
     }
@@ -169,6 +172,7 @@ function visualdata(char: string, small: boolean): string {
 }
 
 export function initDemo(demo: HTMLElement) {
+    window.JSSC.worker.url = 'https://jssc.js.org/worker.min.js';
     const input = Elem('input') as HTMLTextAreaElement;
     const output = Elem('output') as HTMLTextAreaElement;
     const inp = Elem('inp') as HTMLDivElement;
