@@ -45,16 +45,6 @@ html, body {
     justify-content: center;
     overflow: hidden;
 }
-.wave-layer {
-    position: absolute;
-    inset: -20%;
-    background: linear-gradient(135deg, var(--light), var(--dark));
-    filter: url(#waves) blur(2px) saturate(1.1);
-    z-index: 1;
-    mask-image: linear-gradient(270deg, black, transparent);
-    opacity: 0;
-    transition: opacity 1s var(--timing-function);
-}
 
 @property --noise {
     syntax: "<length-percentage>";
@@ -114,30 +104,41 @@ html, body {
     inset: 0;
     padding-top: 140px;
     display: flex;
-    gap: 22px;
-    padding: 160px 40px 40px;
+    gap: 16px;
+    padding: 160px 0px 0px;
     opacity: 0;
     transition: opacity 0.8s var(--timing-function);
     flex-direction: column;
     flex-wrap: nowrap;
     align-items: stretch;
+    height: calc(100% - 86px);
+    width: calc(100% - 80px);
+    border-radius: 22px;
+    overflow: hidden;
+    translate: 40px 0%;
 }
 
-.demo textarea, .demo div, .demo section {
+@property --bg-transparency {
+    syntax: "<number>";
+    initial-value: .15;
+    inherits: false;
+}
+
+.demo textarea, .demo div, .demo section, #run, #run::before, #run::after {
     flex: 1;
     resize: none;
     border-radius: 22px;
     border: none;
-    padding: 22px;
+    padding: 16px;
     font-size: 16px;
-    background: rgba(255,255,255,.85);
+    background: rgba(255,255,255,calc(1 - var(--bg-transparency)));
     backdrop-filter: blur(20px);
 }
 
 .demo section {
     display: flex;
     flex-direction: row;
-    gap: 22px;
+    gap: 16px;
     border-radius: 32px;
 }
 
@@ -238,7 +239,8 @@ html, body {
 }
 
 .demo section, .demo div {
-    transition: opacity 300ms var(--timing-function);
+    transition: opacity 300ms var(--timing-function),
+        padding 300ms var(--timing-function);
 }
 
 .demo .options, .demo #data {
@@ -310,7 +312,7 @@ html, body {
 .demo .bin::after {
     content: "Ratio: " var(--ratio) ":1; Saved: " var(--saved) ".";
     bottom: 0px;
-    translate: 0% -4px;
+    translate: 0% 1px;
     padding-right: 16px;
 }
 
@@ -340,7 +342,9 @@ html, body {
 #c {
     transition: 
         opacity 300ms var(--timing-function),
-        filter 300ms var(--timing-function);
+        filter 300ms var(--timing-function),
+        max-height 300ms var(--timing-function),
+        padding 300ms var(--timing-function);
 }
 
 html {
@@ -353,4 +357,175 @@ html {
 
 ::selection {
     background-color: #efd5ff;
+}
+
+#run {
+    position: fixed;
+    bottom: 30px;
+    z-index: 4;
+    left: 50%;
+    translate: -50% 0%;
+    backdrop-filter: brightness(95%) url(#glass) blur(8px);
+    transition: 
+        all 300ms var(--timing-function),
+        background 0ms;
+    border-radius: 0px;
+    font-family: var(--f-lxzt);
+    cursor: pointer;
+}
+#run, #run::before, #run::after {
+    padding: 8px 24px;
+    --bg-transparency: 0;
+}
+#run::before, #run::after {
+    content: '';
+    -webkit-mask: paint(smooth-corners);
+    mask: paint(smooth-corners);
+    --smooth-corners: 5;
+    position: fixed;
+    height: 100%;
+    aspect-ratio: 1;
+    top: 0px;
+    animation: round 300ms var(--timing-function);
+}
+#run::before {
+    left: -24px;
+}
+#run::after {
+    right: -24px;
+}
+#run:hover {
+    padding: 8px 64px;
+    box-shadow: 0px 0px 20px -5px var(--light);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    border-radius: 20px;
+}
+#run:hover::before, #run:hover::after, .run::before, .run::after {
+    --smooth-corners: 0.6;
+    animation: star 300ms var(--timing-function) !important;
+}
+.run::before, .run::after {
+    --smooth-corners: 0.6 !important;
+}
+
+#run[data-grab=true] {
+    --bg-transparency: 0.75 !important;
+    border-radius: 20px;
+    outline: 1px solid var(--white);
+}
+#run[data-grab=true]::before, #run[data-grab=true]::after {
+    opacity: 0 !important;
+}
+
+@keyframes star {
+    0% {
+        --smooth-corners: 5;
+    }
+    8.33% {
+        --smooth-corners: 3.9;
+    }
+    16.66% {
+        --smooth-corners: 2.8;
+    }
+    25% {
+        --smooth-corners: 1.7;
+    }
+    33.33% {
+        --smooth-corners: 1.48;
+    }
+    41.66% {
+        --smooth-corners: 1.26;
+    }
+    50% {
+        --smooth-corners: 1.05;
+    }
+    58.33% {
+        --smooth-corners: 0.82;
+    }
+    66.66% {
+        --smooth-corners: 0.776;
+    }
+    75% {
+        --smooth-corners: 0.732;
+    }
+    83.33% {
+        --smooth-corners: 0.688;
+    }
+    91.66% {
+        --smooth-corners: 0.644;
+    }
+    to {
+        --smooth-corners: 0.6;
+    }
+}
+@keyframes round {
+    0% {
+        --smooth-corners: 0.6;
+    }
+    8.33% {
+        --smooth-corners: 0.644;
+    }
+    16.66% {
+        --smooth-corners: 0.688;
+    }
+    25% {
+        --smooth-corners: 0.732;
+    }
+    33.33% {
+        --smooth-corners: 0.766;
+    }
+    41.66% {
+        --smooth-corners: 0.82;
+    }
+    50% {
+        --smooth-corners: 1.05;
+    }
+    58.33% {
+        --smooth-corners: 1.26;
+    }
+    66.66% {
+        --smooth-corners: 1.48;
+    }
+    75% {
+        --smooth-corners: 1.7;
+    }
+    83.33% {
+        --smooth-corners: 2.8;
+    }
+    91.66% {
+        --smooth-corners: 3.9;
+    }
+    to {
+        --smooth-corners: 5;
+    }
+}
+
+.run {
+    width: 0px !important;
+    padding: 8px 0px !important;
+    color: transparent;
+    animation: run 3s infinite var(--timing-function) 300ms;
+    letter-spacing: 1vh;
+    cursor: wait !important;
+}
+
+@keyframes run {
+    from {
+        rotate: 0deg;
+    } to {
+        rotate: 360deg;
+    }
+}
+@-webkit-keyframes run {
+    from {
+        rotate: 0deg;
+    } to {
+        rotate: 360deg;
+    }
+}
+
+.demo .bin {
+    max-height: 100vh;
+    overflow: hidden;
 }

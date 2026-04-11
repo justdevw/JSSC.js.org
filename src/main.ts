@@ -2,6 +2,15 @@ import './style.css';
 import './navbar/';
 import './glass/';
 
+declare global {
+    interface Window {
+        anime: {
+            createDraggable(...input: any): any;
+            spring(...input: any): any;
+        }
+    }
+}
+
 export function Elem(id: string): HTMLElement | any {
     return document.getElementById(id);
 }
@@ -11,10 +20,9 @@ const hero = Elem('hero');
 const demo = Elem('demo');
 const logo = Elem('logo') as HTMLImageElement | null;
 const bin = Elem('bin');
-const opt = Elem('3rd');
+const opt = Elem('run');
 const c = Elem('c');
 const txt = Elem('1st');
-const waves = Elem('oil');
 
 if (logo) logo.style.scale = '1.75';
 for (const e of [bin, opt, c, txt]) if (e) {
@@ -22,11 +30,8 @@ for (const e of [bin, opt, c, txt]) if (e) {
     e.style.filter = 'blur(16px)';
 };
 
-setTimeout(() => {
-    document.documentElement.style.transform = 'rotate3d(1, 1, 1, 360deg)';
-    document.documentElement.style.outlineColor = 'transparent';
-    if (waves) 
-        waves.style.opacity = '1';
+setTimeout(()=>{
+    document.documentElement.style.opacity = '1';
 }, 100);
 document.addEventListener('DOMContentLoaded', () => setTimeout(() => {
     if (!logo || !hero || !demo || !bin || !opt || !c) return;

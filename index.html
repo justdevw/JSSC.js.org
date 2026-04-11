@@ -31,11 +31,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script src="https://unpkg.com/justc"></script>
         <script src="https://unpkg.com/strc"></script>
+        <script src="https://unpkg.com/animejs/dist/bundles/anime.umd.min.js"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@100..900&family=Rubik+Mono+One&family=Rubik:ital,wght@0,300..900;1,300..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
         <script>
-            document.documentElement.style.transform = 'rotate3d(1, 1, 1, 280deg)';
+            document.documentElement.style.opacity = '0';
         </script>
     </head>
     <body>
@@ -43,53 +44,6 @@
             <demo-nav></demo-nav>
 
             <section class="hero" id="hero">
-                <svg width="0" height="0" style="position:absolute">
-                    <filter id="waves">
-                        <feTurbulence type="fractalNoise" baseFrequency="0.008 0.02" numOctaves="2" seed="228" result="noise1">
-                            <animate attributeName="baseFrequency" dur="45s" values="
-                                0.008 0.02;
-                                0.013 0.028;
-                                0.009 0.017;
-                                0.011 0.024;
-                                0.008 0.02
-                            " keyTimes="0;0.3;0.6;1" calcMode="spline" keySplines="
-                                0.4 0 0.6 1;
-                                0.4 0 0.6 1;
-                                0.4 0 0.6 1
-                            " repeatCount="indefinite"></animate>
-                        </feTurbulence>
-
-                        <feTurbulence type="fractalNoise" baseFrequency="0.008 0.02" numOctaves="1" seed="67" result="noise2">
-                            <animate attributeName="baseFrequency" dur="24s" values="
-                                0.008 0.02;
-                                0.013 0.028;
-                                0.009 0.017;
-                                0.011 0.024;
-                                0.008 0.02
-                            " keyTimes="0;0.3;0.6;1" calcMode="spline" keySplines="
-                                0.4 0 0.6 1;
-                                0.4 0 0.6 1;
-                                0.4 0 0.6 1
-                            " repeatCount="indefinite"></animate>
-                        </feTurbulence>
-
-                        <feComposite in="noise1" in2="noise2" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="noise">
-                            <animate attributeName="k2" values="0.85;1.15;0.9;1.05;0.85" dur="60s" repeatCount="indefinite"></animate>
-                            <animate attributeName="k3" values="1.1;0.9;1.2;0.95;1.1" dur="73s" repeatCount="indefinite"></animate>
-                        </feComposite>
-                        <feComposite in="SourceGraphic" in2="noise2" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="pregraphic"></feComposite>
-                        <feComposite in="SourceGraphic" in2="pregraphic" operator="arithmetic" k1="0" k2="1" k3="0.15" k4="0" result="graphic">
-                            <animate attributeName="k2" values="1;1.15;0.9;1.05;1" dur="60s" repeatCount="indefinite"></animate>
-                            <animate attributeName="k3" values="0.15;0.2;0.4;0.25;0.15" dur="5s" repeatCount="indefinite"></animate>
-                        </feComposite>
-
-                        <feDisplacementMap in="graphic" in2="noise" scale="140" xChannelSelector="R" yChannelSelector="G">
-                            <animate attributeName="scale" values="500;900;600;800;500" dur="53s" repeatCount="indefinite"></animate>
-                        </feDisplacementMap>
-                    </filter>
-                </svg>
-                <div class="wave-layer" id="oil"></div>
-
                 <img src="/jssc-large.png" class="logo" id="logo" style="scale: 1.5" alt="JSSC" />
             </section>
 
@@ -102,62 +56,15 @@
                     <div id="inp"></div>
                     <div id="out"></div>
                 </section>
-                <section id="3rd" style="max-height: min-content;">
-                    <div class="options">
-                        <div class="compressor">
-                            <label for="justc">JUSTC:</label>
-                            <select name="Switch JUSTC" id="justc" class="w-48">
-                                <option value="y" selected>Enabled</option>
-                                <option value="n">Disabled</option>
-                            </select>
-                        </div>
-                        <div class="compressor">
-                            <label for="segmentation">Segmentation:</label>
-                            <select name="Switch Segmentation" id="segmentation" class="w-48">
-                                <option value="y" selected>Enabled</option>
-                                <option value="n">Disabled</option>
-                            </select>
-                        </div>
-                        <div class="compressor">
-                            <label for="recursive">Recursive Compression:</label>
-                            <select name="Switch Recursive Compression" id="recursive" class="w-48">
-                                <option value="y" selected>Enabled</option>
-                                <option value="n">Disabled</option>
-                            </select>
-                        </div>
-                        <div class="decompressor">
-                            <label for="stringify">Stringify:</label>
-                            <select name="Switch Stringify" id="stringify" class="w-48">
-                                <option value="y">Enabled</option>
-                                <option value="n" selected>Disabled</option>
-                            </select>
-                        </div>
-                        <hr>
-                        <div>
-                            <label for="visual">Visualization:</label>
-                            <select name="Switch Visualization Mode" id="visual" class="w-48">
-                                <option value="Bytes" selected>Binary</option>
-                                <option value="Chars">Characters (2 Bytes)</option>
-                                <option value="Codes">Character Codes</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="mode">Mode:</label>
-                            <select name="Switch Mode" id="mode" class="w-48">
-                                <option value="c" selected>Compress</option>
-                                <option value="d">Decompress</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="data">
-                        <span>(nothing)</span>
-                    </div>
-                </section>
             </section>
+            <button id="run" class="glass">Compress</button>
             <footer id="c">Copyright &copy; 2025-2026 JustDeveloper</footer>
         </div>
         <lqd-gls></lqd-gls>
 
         <script type="module" src="/src/main.ts"></script>
+        <script>
+            if (CSS && 'paintWorklet' in CSS) CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners');
+        </script>
     </body>
 </html>
