@@ -66,8 +66,6 @@ export function initDemo(demo: HTMLElement) {
 
     function run() {
         trigger.removeAttribute('data-grab');
-
-        if (data == input.value) return;
         data = input.value;
 
         [inp.innerHTML, out.innerHTML] = ['', ''];
