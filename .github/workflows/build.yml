@@ -24,9 +24,11 @@ jobs:
           mkdir -p dist/docs
           cp -r docs/.vitepress/dist/* dist/docs/
           cp CNAME dist/CNAME
-          mv dist/docs/download dist/download
-          mv dist/download/index.html dist/download.html
           cp dist/index.html dist/404.html
+          rm index.html
+      - name: _just
+        uses: js-just/latest@main
+      - run: cp index.html dist/download.html
       - uses: cpina/github-action-push-to-another-repository@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
