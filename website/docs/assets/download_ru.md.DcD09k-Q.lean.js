@@ -1,0 +1,1 @@
+import{_ as e,o as t,c as a}from"./chunks/framework.ClaNVmaA.js";const i=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"download/ru.md","filePath":"download/ru.md","lastUpdated":1775987768000}'),o={name:"download/ru.md"};function r(d,n,s,c,p,l){return t(),a("div")}const m=e(o,[["render",r]]);export{i as __pageData,m as default};
