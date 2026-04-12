@@ -27,7 +27,7 @@ jobs:
           cp dist/index.html dist/404.html
           rm index.html
       - name: _just
-        uses: js-just/_just@v0.0.32
+        uses: js-just/_just@v0.0.28
       - run: cp index.html dist/download.html
       - uses: cpina/github-action-push-to-another-repository@main
         env:
