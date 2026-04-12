@@ -23,6 +23,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - run: cp -r jssc/. website/
+      - run: cp .nojekyll website/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
