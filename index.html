@@ -44,13 +44,13 @@
             <demo-nav></demo-nav>
 
             <section class="hero" id="hero">
-                <img src="/jssc-large.png" class="logo" id="logo" style="scale: 1.5" alt="JSSC" />
+                <img src="/jssc-large.png" class="logo" id="logo" style="scale: 1.5; top: 50%; translate: 0px -50%; position: absolute;" alt="JSSC" />
             </section>
 
             <section class="demo" id="demo" m="c">
                 <section class="text" id="1st">
                     <textarea id="input" placeholder="Enter text to compress…"></textarea>
-                    <textarea id="output" placeholder="Compressed result" readonly></textarea>
+                    <textarea id="output" placeholder="Compressed result" readonly style="resize: none; min-height: stretch; max-height: 40vh"></textarea>
                 </section>
                 <section class="bin" id="bin">
                     <div id="inp"></div>
@@ -65,6 +65,7 @@
         <script type="module" src="/src/main.ts"></script>
         <script>
             if (CSS && 'paintWorklet' in CSS) CSS.paintWorklet.addModule('https://unpkg.com/smooth-corners');
+            else document.documentElement.setAttribute('data-pw','false');
         </script>
     </body>
 </html>

@@ -37,16 +37,20 @@ function toBin(str: string): [number, string] {
 function _hide(bin: HTMLElement) {
     bin.style.display = 'none';
 }
-function hide(anim: boolean, bin: HTMLElement) {
+function hide(anim: boolean, bin: HTMLElement, output: HTMLTextAreaElement) {
     bin.style.maxHeight = '0px';
     bin.style.padding = '0px';
+    output.style.cursor = 'default';
+    output.style.resize = 'none';
     setTimeout(()=>_hide(bin), anim ? 300 : 0);
 }
-function show(bin: HTMLElement) {
+function show(bin: HTMLElement, output: HTMLTextAreaElement) {
     bin.style.display = '';
     setTimeout(()=>{
         bin.style.maxHeight = '';
         bin.style.padding = '';
+        output.style.cursor = 'pointer';
+        output.style.resize = 'vertical';
     }, 1);
 }
 
@@ -62,14 +66,14 @@ export function initDemo(demo: HTMLElement) {
 
     let data = input.value;
 
-    hide(false, bin);
+    hide(false, bin, output);
 
     function run() {
         trigger.removeAttribute('data-grab');
         data = input.value;
 
         [inp.innerHTML, out.innerHTML] = ['', ''];
-        show(bin);
+        show(bin, output);
 
         trigger.classList.add('run');
         trigger.innerText = '\u200b';
@@ -128,7 +132,7 @@ export function initDemo(demo: HTMLElement) {
     });
 
     input.addEventListener('input', ()=>{
-        if (input.value != data) hide(true, bin);
-        else show(bin);
+        if (input.value != data) hide(true, bin, output);
+        else show(bin, output);
     });
 }

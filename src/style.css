@@ -32,17 +32,9 @@ html, body {
     inset: 0;
     background: linear-gradient(135deg, var(--light), var(--dark));
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     z-index: 2;
-}
-.hero {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(135deg, var(--light), var(--dark));
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
 }
 
@@ -144,16 +136,16 @@ html, body {
 
 @keyframes logo {
     from {
-        transform: translateY(-38vh) scaleX(1);
+        transform: translateY(62px) scaleX(1);
     }
     10% {
-        transform: translateY(-38vh) scaleX(0.99);
+        transform: translateY(62px) scaleX(0.99);
     }
     20% {
-        transform: translateY(-38vh) scaleX(1.01);
+        transform: translateY(62px) scaleX(1.01);
     }
     30%, to {
-        transform: translateY(-38vh) scaleX(1);
+        transform: translateY(62px) scaleX(1);
     }
 }
 
@@ -314,6 +306,7 @@ html, body {
     bottom: 0px;
     translate: 0% 1px;
     padding-right: 16px;
+    white-space: nowrap;
 }
 
 .demo .bin::after,
@@ -528,4 +521,45 @@ html {
 .demo .bin {
     max-height: 100vh;
     overflow: hidden;
+}
+
+@media (max-width: 888px) {
+    .demo #inp::after,
+    .demo #out::after {
+        display: none;
+    }
+}
+@media (max-width: 450px) {
+    .demo .bin {
+        display: none !important;
+    }
+    .demo #output {
+        resize: none !important;
+        min-height: unset !important;
+        max-height: unset !important;
+        height: unset !important;
+    }
+    .demo .text {
+        flex-direction: column !important;
+    }
+    .demo .text::before {
+        content: 'Compress text'
+    }
+}
+@media (max-width: 340px) {
+    .demo .text::before {
+        display: none;
+    }
+    #run {
+        scale: 0.75;
+        margin-bottom: 10px;
+    }
+}
+
+html[data-pw=false] #run::before, html[data-pw=false] #run::after {
+    --bg-transparency: 1 !important;
+    opacity: 0;
+}
+html[data-pw=false] #run {
+    border-radius: 22px;
 }
