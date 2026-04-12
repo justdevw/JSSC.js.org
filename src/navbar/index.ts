@@ -9,7 +9,33 @@ class navbar extends HTMLElement {
                     <span class="brand ss">JSSC</span>
                 </div>
 
+                <div class="nav-center">
+                    <a
+                        href="/download"
+                        class="docs-link"
+                        aria-label="Download"
+                        id="d1"
+                    >
+                        <span>Download</span>
+                    </a>
+                </div>
+
                 <div class="nav-right">
+                    <a
+                        href="/download"
+                        class="docs-link ss"
+                        aria-label="Download"
+                        id="d2"
+                    >
+                        <span class="ss">Download</span>
+                    </a>
+                    <hr style="
+                        height: 32px;
+                        width: 2px;
+                        background: var(--dark);
+                        color: transparent;
+                        opacity: 0.5;
+                    " class="ss" >
                     <a
                         href="/docs/"
                         class="docs-link"
