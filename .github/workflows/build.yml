@@ -19,6 +19,8 @@ jobs:
           node-version: 20
       - run: npm i
       - run: npm run build
+      - name: _just
+        uses: js-just/latest@main
       - run: npm run docs:build
       - run: |
           mkdir -p dist/docs
@@ -26,8 +28,6 @@ jobs:
           cp CNAME dist/CNAME
           cp dist/index.html dist/404.html
           rm index.html
-      - name: _just
-        uses: js-just/_just@v0.0.28
       - run: cp index.html dist/download.html
       - uses: cpina/github-action-push-to-another-repository@main
         env:
