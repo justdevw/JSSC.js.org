@@ -19,8 +19,6 @@ jobs:
           node-version: 20
       - run: npm i
       - run: npm run build
-      - name: _just
-        uses: js-just/latest@main
       - run: npm run docs:build
       - run: |
           mkdir -p dist/docs
